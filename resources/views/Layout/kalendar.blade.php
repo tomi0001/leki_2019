@@ -34,11 +34,12 @@
 
             @else
      
-                <div align=center  class="cell"><a class="no_active" href={{   url('/Main')}}/{{$year}}/{{$month}}/{{$day2}}  }}>{{$day2}}</a></div>
+                <div align=center  class="cell{{$color[$day2-1]}}"><a class="no_active" href={{   url('/Main')}}/{{$year}}/{{$month}}/{{$day2}}  }}>{{$day2}}</a></div>
                 
             @endif
             </td>
             @php
+                
                 $day2++;
             @endphp
             

@@ -18,7 +18,6 @@ class MainController
 {
     
     public function Main($year = "",$month = "",$day = "",$action = "") {
-            
         $user = new user();
         $product = new product;
         if ( (Auth::check()) ) {
@@ -33,8 +32,23 @@ class MainController
             $next_year  = $kalendar->return_next_year($kalendar->year);
             $back_year  = $kalendar->return_back_year($kalendar->year);
             $listProduct = $Drugs->selectProduct(Auth::User()->id);
+            $Drugs->selectDrugsMonth($kalendar->year,$kalendar->month);
+            //var_dump($Drugs->dayMonth);
             $Drugs->selectDrugs(Auth::User()->id,$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day);
+            $Drugs->showSumDrugs(Auth::User()->id,$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day);
+            $sumAlkohol = $Drugs->sumPercentAlkohol();
+           
             $Drugs->processPrice($Drugs->list);
+            $equivalent = $Drugs->sumEquivalent($Drugs->list);
+            $allEquivalent = $Drugs->sumAllEquivalent($equivalent);
+            $benzo = $Drugs->selectBenzo();
+            //print ("<pre>");
+            //print_r ($Drugs->list);
+            //$color = $Drugs->selectColor($Drugs->list);
+            //$colorforday = $Drugs->selectColorforday($color);
+            $i = count($Drugs->list);
+            $ifDescription = $Drugs->checkIfDescription($Drugs->list);
+            //var_dump($Drugs->color);
             /*
             $i = 0;
             foreach ($Drugs->list as $list) {
@@ -72,6 +86,14 @@ class MainController
                     ->with("day_week",$kalendar->day_week)
                     ->with("list_product",$listProduct)
                     ->with("listDrugs",$Drugs->list)
+                    ->with("ifDescription",$ifDescription)
+                    ->with("j",$i)
+                    ->with("color",$Drugs->dayMonth)
+                    ->with("listSum",$Drugs->listSum)
+                    ->with("sumAlkohol",$sumAlkohol)
+                    ->with("equivalent",$equivalent)
+                    ->with("allEquivalent",$allEquivalent)
+                    ->with("benzo",$benzo)
                     ->with("date",$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day . "?");
            
         }

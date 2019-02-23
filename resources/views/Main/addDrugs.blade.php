@@ -6,13 +6,13 @@
            
     </div>
     <table class='table center'>
-        <form method='get' id='addDrugsAction'>
+        <form method='post' id='addDrugsAction'>
         <tr>
             <td>
                 Nazwe produktu
             </td>    
             <td>
-                <select name='name' class='form-control form-control-lg'>
+                <select name='name'  class='form-control form-control-lg'>
                     @foreach ($list_product as $list)
                     <option value='{{$list->id}}'>{{$list->name}}</option>
                     @endforeach
@@ -61,6 +61,7 @@
             </td>
             
         </tr>
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
         </form>
         
     </table>

@@ -30,6 +30,11 @@ height: 550px;
 
     
 }
+div.center {
+    
+    
+    text-align: center;
+}
 div.error {
     width: 300px;
     text-align: center;
@@ -53,7 +58,7 @@ div.error {
     
     
 }
-.cell {
+.cell0 {
     background-color: #3A770D;
     border-radius: 15px;
     height: 100%;
@@ -61,6 +66,79 @@ div.error {
     
     
 }
+.cell-1 {
+    background-color: #4B5B4B;
+    height: 100%;
+    border-radius: 15px;
+    padding-top: 23px;
+    
+    
+}
+.cell2 {
+    background-color: #26345B;
+    height: 100%;
+    border-radius: 15px;
+    padding-top: 23px;
+    
+    
+}
+.cell1 {
+    background-color: #245B52;
+    height: 100%;
+    border-radius: 15px;
+    padding-top: 23px;
+    
+    
+}
+.cell3 {
+    background-color: #B4251E;
+    height: 100%;
+    border-radius: 15px;
+    padding-top: 23px;
+    
+    
+}
+.cell4 {
+    background-color: #B344B4;
+    height: 100%;
+    border-radius: 15px;
+    padding-top: 23px;
+    
+    
+}
+.cell5 {
+    background-color: #853B24;
+    height: 100%;
+    border-radius: 15px;
+    padding-top: 23px;
+    
+    
+}
+.cell6 {
+    background-color: #652B85;
+    height: 100%;
+    border-radius: 15px;
+    padding-top: 23px;
+    
+    
+}
+.cell7 {
+    background-color: #855842;
+    height: 100%;
+    border-radius: 15px;
+    padding-top: 23px;
+    
+    
+}
+.cell8 {
+    background-color: #850E1E;
+    height: 100%;
+    border-radius: 15px;
+    padding-top: 23px;
+    
+    
+}
+
 .cell_active {
     background-color: #27BB58;
     border-radius: 15px;
@@ -88,10 +166,10 @@ div.title {
     border-radius: 25px 25px 0px 0px;
 }
 table.center {
-    width: 60%;
+    width: 80%;
     margin-left: auto;
     margin-right: auto;
-    color: #32450E;
+    
     
 }
 .color {
@@ -138,14 +216,69 @@ div.show_drugs {
     min-height: 260px;
     background-color: #AEB7A9;
     margin-left: auto;
+    color: #32450E;
     margin-right: auto;
     border-radius: 25px;
+    border-left: medium solid #3A770D;
+    border-right: medium solid #3A770D;
+    border-bottom: medium solid #3A770D;
+    
+}
+table.showSumDrugs {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    
+}
+td.center_danger {
+    text-align: center;
+    font-weight: bold;
+    color: #782F1A;
+    
+}
+div.show_sum_drugs {
+    margin-top: 40px;
+    width: 70%;
+    
+    min-height: 260px;
+    background-color: #AEB7A9;
+    margin-left: auto;
+    color: #32450E;
+    margin-right: auto;
+    border-radius: 25px;
+    border-left: medium solid #3A770D;
+    border-right: medium solid #3A770D;
+    border-bottom: medium solid #3A770D;
+    
+}
+div.sum_average {
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    
+}
+div.list_description {
+        background-color:#136924;
+    margin-left: auto;
+    color: white;
+    border-radius: 25px;
+    
 }
 div.ajax_succes {
     border-radius: 25px;
     background-color: green;
     color: white;
     
+}
+div.ajax_benzo {
+    border-radius: 25px;
+    background-color: green;
+    color: white;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
 }
 div.ajax_error {
     border-radius: 25px;

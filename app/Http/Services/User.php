@@ -80,5 +80,5 @@ class User
     }
     //public function 
     
-    
+
 }

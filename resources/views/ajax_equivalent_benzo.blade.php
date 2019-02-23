@@ -1,0 +1,1 @@
+<div class="ajax_benzo">{{$result}}</div>

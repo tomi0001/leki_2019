@@ -1,5 +1,5 @@
 <div id="add_drugs">
-    <div class="title">
+    <div class="title0">
 
             
             DODAJ NOWY WPIS

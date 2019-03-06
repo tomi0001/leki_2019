@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Services\calendar;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use App\Http\Services\User as ConttrollerUser;
+use App\Http\Services\User as User2;
 use Illuminate\Support\Facades\Input as Input;
 use Auth;
 use Hash;
@@ -19,12 +19,12 @@ class UserController
 {
     public function register() {
         
-        return view("UserRegister");
+        return view("User.Register");
     }
     
     public function registerSubmit() {
-        $controllerUser = new ConttrollerUser;
-        $controllerUser->CheckFormRegister();
+        $User = new User2;
+        $User->CheckFormRegister();
         if (count($controllerUser->error) != 0) {
             return Redirect("/User/Register")->with("error",$controllerUser->error)
                     ->withInput();
@@ -35,8 +35,26 @@ class UserController
         }
         
     }
+    public function logout() {
+        Auth::logout();
+        return redirect("/User/Login")->with("error","Wylogowałeś się");
+    }
     public function login() {
-        return View("UserLogin");
+        return View("User.Login");
+        
+    }
+    public function changePassword() {
+        $User = new User2;
+        if ( (Auth::check()) ) {
+            $bool = $User->checkPassword();
+            if (count($User->error) != 0) {
+                return View("ajax.error_array")->with("error",$User->error);
+            }
+            else {
+                $User->setPassword($bool);
+                return View("ajax.succes")->with("succes","Pomyślnie edytowałeś dane");
+            }
+        }
         
     }
     public function loginAction() {

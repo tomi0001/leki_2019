@@ -33,9 +33,13 @@
                 </td>
                 
             </tr>
+           
         </table>
         
-    </form>    
+    </form>
+    <div class="center">
+                    <a href="{{url('/User/Register')}}"><button class="btn btn-success">Nie masz konta zarejestrój się</button>
+    </div>
     @if (session('error'))
         <div class='error'>
 

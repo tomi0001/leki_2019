@@ -42,6 +42,7 @@ class MainController
             $equivalent = $Drugs->sumEquivalent($Drugs->list);
             $allEquivalent = $Drugs->sumAllEquivalent($equivalent);
             $benzo = $Drugs->selectBenzo();
+            $Drugs->selectColor($Drugs->list);
             //print ("<pre>");
             //print_r ($Drugs->list);
             //$color = $Drugs->selectColor($Drugs->list);
@@ -69,7 +70,7 @@ class MainController
             //$hours_of_reception->check_hour_closed();
             //$hours_of_reception->set_array_hour_doctor(60 * $hours_of_reception->min);
 
-            return view("main")
+            return view("Main.main")
                     ->with("month",$kalendar->month)
                     ->with("year",$kalendar->year)
                     ->with("day",$kalendar->day)
@@ -94,6 +95,7 @@ class MainController
                     ->with("equivalent",$equivalent)
                     ->with("allEquivalent",$allEquivalent)
                     ->with("benzo",$benzo)
+                    ->with("colorDrugs",$Drugs->colorDrugs)
                     ->with("date",$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day . "?");
            
         }

@@ -4,8 +4,9 @@
     $i = 0;
     @endphp
     @foreach ($listDrugs as $list) 
-    <div class='show_drugs' id='titleDrugs{{$i}}'>
-        <div class='title' >
+    <div class="empty"></div>
+    <div class='show_drugs{{$colorDrugs[$i]}}' id='titleDrugs{{$i}}'>
+        <div class='title{{$colorDrugs[$i]}}' >
             
             {{$i+1}}
         </div>
@@ -117,7 +118,7 @@
                 </td>
                 
             </tr>
-          
+         
                     
               
            
@@ -125,6 +126,7 @@
             @endif    
            
         </table>
+         
         <div id='sumbenzo{{$i}}' class='center'></div>
         <table class="table center">
             <tr>

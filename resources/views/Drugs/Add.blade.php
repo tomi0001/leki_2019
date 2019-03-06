@@ -1,7 +1,7 @@
 @extends('Layout.pageMain')
 @section('content')
 <div id="add_drugs">
-    <div class="title">
+    <div class="title0">
 
             
             DODAJ NOWĄ GRUPĘ
@@ -56,7 +56,7 @@
 
 
 <div id="add_drugs">
-    <div class="title">
+    <div class="title0">
 
             
             DODAJ NOWĄ SUBSTANCJE
@@ -124,7 +124,7 @@
       </form>
 </div>
 <div id="add_drugs">
-        <div class="title">
+        <div class="title0">
 
             
             DODAJ NOWY PRODUKT

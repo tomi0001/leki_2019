@@ -41,7 +41,7 @@ class MainDrugsController
               //  array_push($this->error, "Wystąpił jakiś błąd");
             //}
             if (count($this->error) != 0) {
-                return View("ajax_error_array")->with("error",$this->error);
+                return View("ajax.error_array")->with("error",$this->error);
             }
             else {
                 $price = $Drugs->sumPrice(Input::get("dose"),Input::get("name"));
@@ -49,18 +49,18 @@ class MainDrugsController
                 //print $Drugs->date;
                 $Drugs->addDrugs($Drugs->date,$price);
                 //print $Drugs->date;
-                return View("ajax_succes")->with("succes","Pomyslnie dodano");
+                return View("ajax.succes")->with("succes","Pomyslnie dodano");
             }
             
         }
      public function addDescriptionsAction() {
          $Drugs = new Drugs;
          if (Input::get("description") == "") {
-             return View("ajax_error")->with("error","Musisz coś wpisać");
+             return View("ajax.error")->with("error","Musisz coś wpisać");
          }
          else {
              $Drugs->addDescription(Input::get("id_use"),date("Y-m-d H:i:s"));
-             return View("ajax_succes")->with("succes","Pomyslnie dodano");
+             return View("ajax.succes")->with("succes","Pomyslnie dodano");
          }
          //print str_replace("\n","<br>",Input::get("descriptions"));
          
@@ -96,15 +96,20 @@ class MainDrugsController
              }
              //var_dump($lista);
              //$Drugs->sumAverage(Input::get("id"));
-             return View("ajax_sum_average")->with("arrayDay",$array)->with("hourDrugs",$hourDrugs);
+             return View("ajax.sum_average")->with("arrayDay",$array)->with("hourDrugs",$hourDrugs);
          }
          
      }
      public function showDescriptionsAction() {
          $Drugs = new Drugs;
-         $list = $Drugs->selectDescription(Input::get("id"));
+         $Drugs->description = $Drugs->selectDescription(Input::get("id"));
+         $Drugs->changeChar($Drugs->description);
+         //print("<pre>");
+         //print_r ($list);
          //print Input::get("id");
-         return View("show_description")->with("list",$list);
+         //print ("<pre>");
+         //print_r ($descri);
+         return View("ajax.show_description")->with("list",$Drugs->description);
          
      }
      public function sumBenzo() {
@@ -116,7 +121,7 @@ class MainDrugsController
          $result = $Drugs->calculateEquivalent(Input::get("equivalent"),10,$equivalent);
          //$result = $Drugs->calculateEquivalent(0.5,0.5,10);
          //$result2 = $Drugs->calculateEquivalent($result,10,1);
-         return View("ajax_equivalent_benzo")->with("result",$result);
+         return View("ajax.equivalent_benzo")->with("result",$result);
          //print $result;
      }
 }

@@ -26,7 +26,7 @@ class AddDrugsController
             $listGroup = $Drugs->showGroup(Auth::User()->id);
             $listSubstance = $Drugs->showSubstances(Auth::User()->id);
             
-            return View("drugsAdd")->with("listGroup",$listGroup)
+            return View("Drugs.Add")->with("listGroup",$listGroup)
                                 ->with("listSubstance",$listSubstance);
         }
         
@@ -58,14 +58,14 @@ class AddDrugsController
                 array_push($this->error, "Pole cena musi być numeryczna, a pole za ile całkowita");
             }
             if (count($this->error) != 0) {
-                return View("ajax_error_array")->with("error",$this->error);
+                return View("ajax.error_array")->with("error",$this->error);
                 
             }
             else {
                 $id = $Drugs->saveProduct(Input::get("name"),Auth::User()->id,Input::get("percent"),Input::get("portion"),Input::get("price"),Input::get("how"));
                 //saveProduct($name,$id_users,$percent,$portion,$price,$how)
                 $Drugs->addForwadindSubstance($id,Input::get("substance"));
-                return View("ajax_succes")->with("succes","Dodano pomyslnie produkt");
+                return View("ajax.succes")->with("succes","Dodano pomyslnie produkt");
             }
         }
         
@@ -78,19 +78,19 @@ class AddDrugsController
             //var_dump( Input::get("name"));
             $bool = $Drugs->checkGroupArray(Input::get("group"),Auth::User()->id);
             if (Input::get("name") == "") {
-                 return View("ajax_error")->with("error","Wpisz nazwę");
+                 return View("ajax.error")->with("error","Wpisz nazwę");
             }
             if ($bool == false){
-                return View("ajax_error")->with("error","Coś poszło nie tak");
+                return View("ajax.error")->with("error","Coś poszło nie tak");
             }
             else if($check == false) {
-                return View("ajax_error")->with("error","Już jest substancja o takiej nazwie");
+                return View("ajax.error")->with("error","Już jest substancja o takiej nazwie");
                 
                 //$Drugs->addSubstances()
             }
             else {
                 $Drugs->addSubstances(Input::get("group"),Input::get("equivalent"),Input::get("name"),Auth::User()->id);
-                return View("ajax_succes")->with("succes","Pomyslnie dodano substancje");
+                return View("ajax.succes")->with("succes","Pomyslnie dodano substancje");
             }
             
             
@@ -101,14 +101,14 @@ class AddDrugsController
         if ( (Auth::check()) ) {
             $Drugs = new Drugs;
             if (Input::get("name") == "") {
-                return View("ajax_error")->with("error","Wpisz nazwę");
+                return View("ajax.error")->with("error","Wpisz nazwę");
             }
             $bool = $Drugs->addGroup();
             if ($bool == true) {
-                return View("ajax_succes")->with("succes","Grupa dodana pomyslnie");
+                return View("ajax.succes")->with("succes","Grupa dodana pomyslnie");
             }
             else {
-                return View("ajax_error")->with("error","Już jest Grupa o takiej nazwie wybierz inną");
+                return View("ajax.error")->with("error","Już jest Grupa o takiej nazwie wybierz inną");
                 
             }
             

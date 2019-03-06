@@ -13,6 +13,13 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
+        Schema::create('password_resets', function (Blueprint $table) {
+        $table->increments('id');
+        $table->string('email')->index();
+        $table->string('token');
+        $table->timestamps();
+    });
+
         Schema::create('users', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();

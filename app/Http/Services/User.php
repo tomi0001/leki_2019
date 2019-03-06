@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
 //use App\calendar;
 use Illuminate\Support\Facades\Input as Input;
 use Auth;
-
+//use App\Notifications\MailResetPasswordToken;
+use Illuminate\Support\Facades\Password as Password;
 use Hash;
 use DB;
 use App\User as Users;
@@ -56,6 +57,54 @@ class User
         
         
         
+    }
+    public function checkPassword() {
+        //print Input::get("start_day");
+        if (Input::get("password_new") == "" and Input::get("password_new2") == "") {
+            return true;
+        }
+        if (!Hash::check(Input::get("password_old"), Auth::User()->password)) {
+            array_push($this->error, "Wpisałęś stare złe hasło");
+        }
+        //print "password_new";
+        if (Input::get("password_new") != Input::get("password_new2")) {
+            array_push($this->error, "Podane nowe hasła sa różne");
+        }
+        if (strlen(Input::get("password_new")) < 5) {
+            array_push($this->error, "Hasło jest za krótkie");
+        }
+        if (!is_numeric( Input::get("start_day")) or Input::get("start_day") <0 or Input::get("start_day") > 23) {
+            array_push($this->error, "Początek dnia musi być liczbą całkowitąi być w przedziale od 0 do 23");
+        }
+        return false;
+
+    }
+    public function setPassword($bool) {
+        $User = new Users;
+        //$user_id = Auth::User()->id;       
+        //$User->password = Hash::make(Input::get("password_old"));
+        //$User->remember_token = "";
+        $array = array();
+        $array["start_day"] = Input::get("start_day");
+        //array_push("start_day")
+        if ($bool == false) {
+            $array["password"] = Hash::make(Input::get("password_new"));
+        }
+        $User->where("id",Auth::User()->id)
+                ->update($array);
+        //$userinput["password"] = Hash::make(Input::get("password_old"));
+        
+        //$this->validate($request, $User::validationRules());
+
+        //$User::find(Auth::User()->id)->update($userinput);
+        //Password::sendResetLink(['id' => Auth::User()->id]);
+        //$User->save();
+        //$objUser = $User::find($user_id);
+        
+        //$objUser->password = Hash::make(Input::get("password_old"));
+        //$objUser->update(); 
+        //print "dos";
+                
     }
     public function saveUser() {
         $userRegister = new Users;

@@ -1,5 +1,5 @@
 <div class='show_sum_drugs'>
-        <div class='title' >
+        <div class='title0' >
             LISTA SUBSTANCJI BRANA TEGO DNIA
         </div>
     <table class='table showSumDrugs'>

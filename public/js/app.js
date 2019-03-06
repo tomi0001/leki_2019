@@ -43,7 +43,7 @@
         //$.get( url, { name: "John", time: "2pm" } );
         var name = $("select[name=name]").val();
         var dose = $("input[name=dose]").val();
-        var description = $("textarea[name=description]").val();
+        var description = escape($("textarea[name=description]").val());
         var date = $("input[name=date]").val();
         var time = $("input[name=time]").val();
         //alert(description);
@@ -86,7 +86,7 @@
     function show_description(i,url,id) {
         //$("#show_description"+i)
         //if (!$("#show_description"+i)) {
-        
+        //alert("d");
             $("#show_description"+i).toggle();
             $("#show_description"+i).load(url + "?id=" + id);
         //}
@@ -95,6 +95,75 @@
         //}
         
         
+    }
+    function changePassword(url) {
+        var new_password = $("input[name=password_new]").val();
+        var new_password2 = $("input[name=password_new2]").val();
+        var old_password = $("input[name=password_old]").val();
+        var start_day = $("input[name=start_day]").val();
+        $("#changeSetting").load(url + "?password_old=" + old_password + "&password_new=" + new_password + "&password_new2=" + new_password2 + "&start_day=" + start_day);
+        
+    }
+    function changeGroup(url,id) {
+        var color = $("select[name=color]").val();
+        var name = escape($("input[name=name]").val());
+        
+        $("#groupResult").load(url + "?id=" + id + "&color=" + color + "&name=" + name);
+        //alert(color);
+        
+    }
+    function EditGroup(url) {
+        var id = $("select[name=group]").val();
+        if (id != "") {
+            $("#ajax_editGroup").load(url + "?id=" + id);
+        }
+    }
+    function EditSubstance(url) {
+        var id = $("select[name=substance]").val();
+        if (id != "") {
+            $("#ajax_editSubstance").load(url + "?id=" + id);
+        }
+    }
+    function changeSubstance(url,id) {
+               /*         var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                var data = $('form#changeSubstance').serialize();
+        //alert("sdsf");
+        //$("#ajax_add_drugs").post(url );
+        //$.ajax({
+           //url: url,
+           //type: "post",
+          // data: form
+        //});
+        //$.post(url, data);
+        //$.get( url, { name: "John", time: "2pm" } );
+        //var description = escape($("textarea[name=descriptions" + i +  "]").val());
+        var id = $("checkbox[name=id]").val();
+        var name = $("input[name=name]").val();
+        //var description = $("textarea[name=description]").val();
+        //var date = $("input[name=date]").val();
+        //var time = $("input[name=time]").val();
+           $.ajax({
+            type: "GET", 
+            url: url, 
+            data: { _token: CSRF_TOKEN, id: id,name: name},
+            datatype: "JSON",
+ 
+                
+                success : function(data) {
+                //alert( "sukces");
+                $("#substanceResult").html(data);
+                },
+                        error: function(blad) {
+                    //alert( "Wystąpił błąd");
+                    //console.log(blad); /*Funkcja wyświetlająca informacje o ewentualnym błędzie 
+                    //w konsoli przeglądarki
+                }
+            });
+            */
+           
+        $("#substanceResult").load(url + "?" +  $( "form" ).serialize() + "&id_sub=" + id);
+        
+    
     }
     function hide_description(i) {
         
@@ -143,7 +212,7 @@
         //});
         //$.post(url, data);
         //$.get( url, { name: "John", time: "2pm" } );
-        var description = $("textarea[name=descriptions" + i +  "]").val();
+        var description = escape($("textarea[name=descriptions" + i +  "]").val());
         //var id_use = $("hidden[name=id_use]").val();
         //var dose = $("input[name=dose]").val();
         //var description = $("textarea[name=description]").val();

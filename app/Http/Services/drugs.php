@@ -31,7 +31,9 @@ class drugs
     public $color_how_calendar;
     public $date_next;
     public $dayMonth = array();
+    public $colorDrugs = array();
     public $listSum = array();
+    public $description = array();
     public function addGroup() :bool {
         if ($this->checkGroupName(Input::get("name"),Auth::User()->id) == "" ) {
             $Group = new Group;
@@ -44,6 +46,132 @@ class drugs
         }
         return false;
         
+    }
+    public function checkName(int $id,string $name,string $table) {
+        
+        $gro = DB::table($table)->where("id","!=",$id)->where("name",$name)->first();
+        if (!empty($gro)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+    public function selectGroupName(int $id) {
+        $group = new Forwarding_group;
+        $arrayGroup = array();
+        $i = 0;
+        //print $id;
+        $list = $group
+                ->selectRaw("forwarding_groups.id_substances as id_sub")
+                ->selectRaw("forwarding_groups.id_groups as id_gro")
+                ->selectRaw("groups.name as name")
+                ->join("groups","groups.id","forwarding_groups.id_groups")
+                //->join("forwarding_substances","")
+                ->where("groups.id_users",Auth::User()->id)
+                //->groupBy("forwarding_groups.id_groups")
+                //->having("forwarding_groups.id_substances",$id)
+                ->get();
+        foreach ($list as $listGroup)  {
+            //print $id;
+            //print $listGroup->id_sub . " ";
+            if ($listGroup->id_sub == $id) {
+                $arrayGroup[$i][0] = $listGroup->id_gro;
+                $arrayGroup[$i][1] = $listGroup->name;
+                $arrayGroup[$i][2] = true;
+                //print "s";
+            }
+            else {
+                $arrayGroup[$i][0] = $listGroup->id_gro;
+                $arrayGroup[$i][1] = $listGroup->name;
+                $arrayGroup[$i][2] = false;
+            }
+            $i++;
+        }
+        return $arrayGroup;
+        
+    }
+    public function selectGroupId(int $id) {
+        $group = new Group;
+        $list = $group->where("id",$id)->first();
+        //print $list->name;
+        return $list;
+    }
+    public function updateName(int $id) {
+        $group = new Group;
+        $group->where("id",$id)->update(["name" => Input::get("name"),"color"=> Input::get("color")]);
+    }
+    public function updateSubstance(int $id) {
+        $Forwarding_group = new Forwarding_group;
+        $Forwarding_group->where("id_substances",$id)->delete();
+        $this->addForwardingSubstance($id);
+    }
+    private function addForwardingSubstance(int $id) {
+        //$Forwarding_group = new Forwarding_group;
+        for ($i = 0;$i < count(Input::get("id"));$i++) {
+            //print "s";
+            $Forwarding_group = new Forwarding_group;
+            $Forwarding_group->id_substances = $id;
+            $Forwarding_group->id_groups = Input::get("id")[$i];
+            $Forwarding_group->save();
+        }
+        
+    }
+    public function charset_utf_fix2($string) {
+ 
+	$utf = array(
+	  "Ą" =>"%u0104",
+	  "Ć" => "%u0106",
+	  "Ę"  => "%u0118",
+	  "Ł" => "%u0141",
+	  "Ń" => "%u0143",
+	  "Ó" => "%D3",
+	  "Ś" => "%u015A",
+	  "Ź" => "%u0179",
+	  "Ż" => "%u017B",
+	  "ą" => "%u0105",
+	  "ć" => "%u0107",
+	  "ę" => "%u0119",
+	  "ł" => "%u0142",
+	  "ń" => "%u0144",
+	  "ó" => "%F3",
+	  "ś" => "%u015B",
+	  "ź" => "%u017A",
+	  "ż" => "%u017C",
+          " " => "&nbsp"
+	);
+	
+	return str_replace(array_keys($utf), array_values($utf), $string);
+        
+	
+    }
+    public function charset_utf_fix($string) {
+ 
+	$utf = array(
+	 "%u0104" => "Ą",
+	 "%u0106" => "Ć",
+	 "%u0118" => "Ę",
+	 "%u0141" => "Ł",
+	 "%u0143" => "Ń",
+	 "%D3" => "Ó",
+	 "%u015A" => "Ś",
+	 "%u0179" => "Ź",
+	 "%u017B" => "Ż",
+	 "%u0105" => "ą",
+	 "%u0107" => "ć",
+	 "%u0119" => "ę",
+	 "%u0142" => "ł",
+	 "%u0144" => "ń",
+	 "%F3" => "ó",
+	 "%u015B" => "ś",
+	 "%u017A" => "ź",
+	 "%u017C" => "ż",
+         "&nbsp" => " "
+	);
+	
+	return str_replace(array_keys($utf), array_values($utf), $string);
+        
+	
     }
     public function addDrugs($date,$price) {
         $use = new usee;
@@ -148,6 +276,15 @@ class drugs
            
           
         
+    }
+    public function changeChar($list) {
+        
+        foreach ($list as $description) {
+            $description->description = $this->charset_utf_fix($description->description);
+            //$descriptio->date = 'ddd';
+            //print "s";
+        }
+        //return $description;
     }
     public function checkSubstanceArray( $arraySubstance,int $id_users) :bool {
         $Substance = new Substances; 
@@ -435,14 +572,18 @@ class drugs
     private function calculatePrice($price) {
         $gr = "";
         $zl = "";
+        $price = round($price,2);
         if (strstr($price,".")) {
             $div = explode(".",$price);
                 if (strlen($div[1]) == 1) {
                     $gr =  $div[1] . "0 Gr";
                 }
-                else if  (strlen($div[1] == 2) and $div[1][0] == 0) {
+                else if  (strlen($div[1]) == 2 and $div[1][0] == 0) {
                     $gr =  $div[1][1] . " Gr";
                     
+                }
+                else if (strlen($div[1]) == 2) {
+                    $gr =  $div[1] . " Gr";
                 }
                 else {
                     $zl = $div[0] . " zł ";
@@ -462,7 +603,7 @@ class drugs
         for ($i = 0;$i < $howmonth;$i++) {
             $j = $i + 1;
             $this->selectDrugs(Auth::User()->id,$year . "-" . $month . "-" . $j);
-            $this->dayMonth[$i] = $this->selectColor($this->list);
+            $this->dayMonth[$i] = $this->selectColorforday($this->list);
             
         }
         
@@ -534,6 +675,22 @@ class drugs
         $portion = $usee->find($id);
         return $portion;
     }
+    public function ifIdIsUsera(string $table,int $id) {
+        
+        $if = DB::table($table)->where("id",$id)->where("id_users",Auth::User()->id)->first();
+        if (empty($if)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+        
+    }
+    public function selectSubstance(int $id_users) {
+        $substance = new Substances;
+        $list = $substance->where("id_users",$id_users)->get();
+        return $list;
+    }
     public function selectBenzo() {
         $substances = new Substances;
         $list = $substances->where("id_users",Auth::User()->id)
@@ -573,20 +730,16 @@ class drugs
         return $equivalent->equivalent;
         
     }
-  
-     public function selectColor($drugsList) {
+    public function selectColor($drugsList) {
         $Product = new product;
         $forwarding_substances = new Forwarding_substance;
         $forwarding_group = new Forwarding_group;
         $group = new group;
-        $colorarray = array();
-        $bool = false;
-        if (count($drugsList) == 0) {
-            return -1;
-        }
-        $color3 = "";
-           foreach ($drugsList as $list) {
-           
+        foreach ($drugsList as $list) {
+           $i = 0;
+           $array = array();
+           //$i = 0;
+           //$array[0] = 0;
             $idSub = $forwarding_substances->where("id_products",$list->id)->get();
             foreach ($idSub as $idSubstances) {
                 $idGru = $forwarding_group->where("id_substances",$idSubstances->id_substances)->get();
@@ -596,15 +749,93 @@ class drugs
                             if ($color2->color == null or $color2->color == 0){
                                 continue;
                             }
-                            $colorarray[] = (int) $color2->color;
+                            
+                            //print "heelo ";
+                            //print  $color2->color;
+                            //if ($day == true) {
+                                //if ($i == 0) {
+                                  //  $array[] = (int) $color2->color;
+                                //}
+                                //else {
+                                    $array[] += (int) $color2->color;
+                                //}
+                            //}
+                            //$colorarray[] = (int) $color2->color;
+                            $i++;
+                            
 
                     }
                 }
+                //print "s";
+                
             }
             $bool = true;
-            
+            //if ($day == true) {
+                $this->colorDrugs[] = $this->colorForDay(array_product(array_unique($array)));
+                //$i++;
+            //}
            }
+           if (empty($colorarray)) {
+               return 0;
+           }
+           //if ($bool == true and $day == false) {
+             //  return $this->colorForDay((array_product(array_unique($colorarray))));
+           //}
+    }
+     public function selectColorforday($drugsList) {
+        $Product = new product;
+        $forwarding_substances = new Forwarding_substance;
+        $forwarding_group = new Forwarding_group;
+        $group = new group;
+        
+        
+        $colorarray = array();
+        //$array = array
+        $bool = false;
+        if (count($drugsList) == 0) {
+            return -1;
+        }
+        $color3 = "";
+           foreach ($drugsList as $list) {
+           //$i = 0;
+           //$array = array();
+           //$i = 0;
+           //$array[0] = 0;
+            $idSub = $forwarding_substances->where("id_products",$list->id)->get();
+            foreach ($idSub as $idSubstances) {
+                $idGru = $forwarding_group->where("id_substances",$idSubstances->id_substances)->get();
+                foreach ($idGru as $idgroup) {
+                    $color = $group->where("id",$idgroup->id_groups)->get();
+                    foreach ($color as $color2) {
+                            if ($color2->color == null or $color2->color == 0){
+                                continue;
+                            }
+                            
+                            //print "heelo ";
+                            //print  $color2->color;
+                            //if ($day == true) {
+                                //if ($i == 0) {
+                              //      $array[] = (int) $color2->color;
+                                //}
+                                //else {
+                                    //$array[$i-1] += (int) $color2->color;
+                                //}
+                            //}
+                            $colorarray[] = (int) $color2->color;
+                            //$i++;
+                            
 
+                    }
+                }
+                //print "s";
+                
+            }
+            $bool = true;
+            //if ($day == true) {
+              //  $this->colorDrugs[] = $this->colorForDay(array_product(array_unique($array)));
+                //$i++;
+            //}
+           }
            if (empty($colorarray)) {
                return 0;
            }
@@ -686,5 +917,15 @@ class drugs
         
     }
     
-    
+    public function selectGroup(int $id_users) {
+        $Group = new Group;
+        $list = $Group->where("id_users",$id_users)->get();
+        return $list;
+        
+    }
+    public function selectNameSubstance(int $id) {
+        $Substances = new Substances;
+        $name = $Substances->where("id_users",Auth::User()->id)->where("id",$id)->first();
+        return $name->name;
+    }
 }

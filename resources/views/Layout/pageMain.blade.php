@@ -27,7 +27,7 @@
                     <a class="menu" href="{{url('/Produkt/Add')}}">DODAJ NOWY PRODUKT</a>
                 </div>
                 <div class="menu">
-                    <a class="menu" href="{{url('/Produkt/Edit')}}">MODYFIKUJ PRODUKTY</a>
+                    <a class="menu" href="{{url('/Produkt/Edit')}}">USTAWIENIA KONTA</a>
                 </div>
                 <div class="menu">
                     <a class="menu" href="{{url('/User/Logout')}}">WYLOGUJ</a>

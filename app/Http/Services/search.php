@@ -1,11 +1,315 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- * 
- * 
- * 
- */
+namespace App\Http\Services;
 
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Group as Group;
+use App\Substance as Substances;
+use App\Forwarding_substance as Forwarding_substance;
+use App\Product as Product;
+use App\Forwarding_group as Forwarding_group;
+use App\Usee as usee;
+use App\User as User;
+use DB;
+use App\Description as Description;
+use App\Http\Services\calendar as calendar;
+use App\Forwarding_description as Forwarding_description;
+use Illuminate\Support\Facades\Input as Input;
+use Auth;
+
+class search
+{   
+    public $arrayFindPro = [0,0];
+    public $arrayFindSub = [0,0];
+    public $arrayFindGro = [0,0];
+    public $type;
+    public $string;
+    private $sort = "date";
+    public $id_product =array();
+    public function checkField() {
+    //    if (Input::get("product") != "")
+        
+    }
+    public function find() {
+        $array = array();
+        $bool = false;
+        if (Input::get("product") != "") {
+            $this->arrayFindPro = $this->findString(Input::get("product"),"products");
+            $this->type = "products";
+            if (count($this->arrayFindPro) != 0) {
+                $this->string = $this->arrayFindPro[0][1];
+            }
+            $this->selectIdProduct();
+            $bool = true;
+        }
+        if (Input::get("substances") != "") {
+            $this->arrayFindSub = $this->findString(Input::get("substances"),"substances");
+            $this->type = "substances";
+            if (count($this->arrayFindSub) != 0) {
+                $this->string = $this->arrayFindSub[0][1];
+            }
+            $this->selectIdSubstances();
+            $bool = true;
+        }
+        if (Input::get("group") != "") {
+            $this->arrayFindGro = $this->findString(Input::get("group"),"groups");
+            $this->type = "groups";
+            if (count($this->arrayFindGro) != 0) {
+                $this->string = $this->arrayFindGro[0][1];
+            }
+            $this->selectIdGroups();
+            $bool = true;
+        }
+        return $bool;
+    }
+    
+    public function checkArrayFind() {
+        if ((count($this->arrayFindPro) == 0 or $this->arrayFindPro[0][0] <= 0.5) 
+                and (count($this->arrayFindSub) == 0 or $this->arrayFindSub[0][0] <= 0.5) 
+                and (count($this->arrayFindGro) == 0 or $this->arrayFindGro[0][0] <= 0.5)) {
+            return false;
+        }
+        //else if (count($this->arrayFindSub) == 0 or $this->arrayFindSub[0][0] <= 0.5) {
+          //  return false;
+        //}
+        //else if (count($this->arrayFindGro) == 0 or $this->arrayFindGro[0][0] <= 0.5) {
+          //  return false;
+        //}
+        //for ($i=0;$i < count($this->arrayFindPro);$i++) {
+          //  if ()
+        //}
+        return true;
+    }
+     
+     
+    public function selectIdProduct() {
+        $product = new product;
+        $id = $product->where("name",$this->string)->first();
+        if (count($id) != 0) {
+            array_push($this->id_product, $id->id);
+        }
+        
+    }
+    public function selectIdSubstances() {
+        $substance = new substances;
+        $id = $substance->selectRaw("products.id as id")
+                ->join("forwarding_substances","forwarding_substances.id_substances","substances.id")
+                ->join("products","products.id","forwarding_substances.id_products")
+                ->where("substances.name",$this->string)->get();
+        $i = 0;
+        foreach ($id as $id_product) {
+            //$this->id_product[$i] = $id_product->id;
+            array_push($this->id_product,$id_product->id);
+            $i++;
+        }
+        
+    }
+    public function selectIdGroups() {
+        $group = new group;
+        $id = $group->selectRaw("products.id as id")
+                ->selectRaw("products.name as name")
+                ->join("forwarding_groups","groups.id","forwarding_groups.id_groups")
+                ->join("substances","substances.id","forwarding_groups.id_substances")
+                ->join("forwarding_substances","substances.id","forwarding_substances.id_substances")
+                ->join("products","products.id","forwarding_substances.id_products")
+                ->where("groups.name",$this->string)->get();
+        $i = 0;
+        foreach ($id as $id_product) {
+            array_push($this->id_product,$id_product->id);
+            //print $id_product->name . "<br>";
+            $i++;
+        }
+        
+    }
+    private function selectHourStart(int $id_users) {
+        $user = new User;       
+        $hour = $user->where("id",$id_users)->first();
+        return $hour->start_day;
+        
+    }
+    private function setSort() {
+        if (Input::get("sort") == "portion" and Input::get("day") != "") {
+            $this->sort = "por";
+        }
+        else if (Input::get("sort") == "portion") {
+            $this->sort = "portion";
+        }
+        else if (Input::get("sort") == "product") {
+            $this->sort = "product";
+        }
+        else if (Input::get("sort") == "hour") {
+            $this->sort = "hour";
+        }
+    }
+    public function createQuestions($bool) {
+        $drugs = new drugs;
+        $usee =  usee::query();
+        $hour = $this->selectHourStart(Auth::User()->id);
+        $search = $drugs->charset_utf_fix2(Input::get("search"));
+        $usee->select( DB::Raw("(DATE(IF(HOUR(usees.date) >= '$hour', usees.date,Date_add(usees.date, INTERVAL - 1 DAY) )) ) as dat  "))   
+                //->selectRaw()
+                ->selectRaw("hour(usees.date) as hour")
+                ->selectRaw("round(sum(usees.portion),2) as por")
+                ->selectRaw("day(usees.date) as day")
+                ->selectRaw("month(usees.date) as month")
+                ->selectRaw("year(usees.date) as year")                
+                ->selectRaw("usees.portion as portion")
+                ->selectRaw("usees.date as date")
+                ->selectRaw("usees.id_products as id")
+                ->selectRaw("usees.id as id_usees")
+                ->selectRaw("descriptions.description as description")
+                ->selectRaw("descriptions.date as date_description")
+                ->selectRaw("usees.id_products as product")
+                ->selectRaw("products.name as name")
+                ->selectRaw("products.type_of_portion as type")
+                ->leftjoin("products","products.id","usees.id_products")
+                ->leftjoin("forwarding_descriptions","usees.id","forwarding_descriptions.id_usees")
+                ->leftjoin("descriptions","descriptions.id","forwarding_descriptions.id_descriptions")
+                ->where("usees.id_users",Auth::User()->id);
+        if (count($this->id_product) == 0 and (Input::get("data1") == "" or Input::get("data2") == "")) {
+            
+            $data2 = date("Y-m-d");
+            $data1 = date("Y-m-d", time() - 2592000);
+        }
+        else {
+            $data1 = Input::get("data1");
+            $data2 = Input::get("data2");
+        }
+        if ($data1 != "") {
+            $usee->where("usees.date",">=",$data1);
+        }
+        if ($data2 != "") {
+            $usee->where("usees.date","<=",$data2);
+        }
+        if (Input::get("dose1") != "" and Input::get("day") == "") {
+            $usee->where("usees.portion",">=",Input::get("dose1"));
+        }
+        if (Input::get("dose2") != "" and Input::get("day") == "") {
+            $usee->where("usees.portion","<=",Input::get("dose2"));
+        }
+        if (Input::get("hour1") != "") {
+            $usee->whereRaw("hour(usees.date) >=  " . Input::get("hour1"));
+        }
+        if (Input::get("hour2") != "")  {
+            $usee->whereRaw("hour(usees.date)<=" . Input::get("hour2"));
+        }
+        if (Input::get("search") != "") {
+            $usee->where("descriptions.description","like","%" . $search . "%");
+        }
+        if (Input::get("inDay") != "") {
+            $usee->where("descriptions.description","!=", "");
+        }
+        
+        if ($bool == true) {
+                $usee->whereIn("products.id",$this->id_product);
+        }
+        
+        
+                if (Input::get("day") != "") {
+                    //$sort = "por";
+                    $usee->groupBy(DB::Raw("(DATE(IF(HOUR(usees.date) >= '$hour', usees.date,Date_add(usees.date, INTERVAL - 1 DAY) )) )"));
+                    //$usee->groupBy("usees.id");
+                    if (Input::get("dose1") != "" ) {
+                      $usee->havingRaw("sum(usees.portion) >= " . Input::get("dose1"));
+                    }
+                    if (Input::get("dose2") != "" ) {
+                      $usee->havingRaw("sum(usees.portion) <= " . Input::get("dose2"));
+                    }
+                }
+                else {
+                    $usee->groupBy("usees.id");
+                    //d$sort = "portion";
+                }
+             $this->setSort();
+            $usee->orderBy($this->sort,"DESC");
+            $list = $usee->paginate(10);
+        //$list = $usee->paginate(10);
+        //$list = [1,1];
+        
+        //print count($paginate);
+        //foreach ($list as $l) {
+          //  print $l->name;
+        //}
+        return $list;
+        
+    }
+    //private function devisionString($string,$table) {
+        //$explode = explode(",",$string);
+        //for ($i=0;$i < count($explode);$i++) {
+            //$this->findString($explode[$i],$table);
+        //}
+        
+    //}
+    
+    public function changeArray($list) {
+        $day = array();
+        $i = 0;
+        $tmp = array();
+        foreach ($list as $list2) {
+            
+            $day[$i][0] = $list2->dat;
+            $tmp = explode("-",$list2->dat);
+            $day[$i][1] = $tmp[0];
+            $day[$i][2] = $tmp[1];
+            $day[$i][3] = $tmp[2];
+            switch ($list2->type) {
+                case 1: 
+                    $day[$i][4] = "Mg";
+                break;
+                case 2: 
+                    $day[$i][4] = "militry";
+                break;
+                default:
+                    $day[$i][4] = "ilości";
+                
+            }
+            $i++;
+        }
+        return $day;
+    }
+    
+    private function findString($search,$table) {
+        $array = array();
+        $find = DB::table($table)->where("id_users",Auth::User()->id)->get();
+        $i = 0;
+        foreach ($find as $find2) {
+             $find3 = DB::table($table)->get();
+
+                $result = $this->findSuchString($search,$find2->name);
+                if ($result >= 0) {
+                   $array[$i][0] =  $result;
+                   $array[$i][1] =  $find2->name;
+                 
+                   $i++;
+                }
+
+        }
+        //if ($i == 0) {
+            //return [[0,0],[0,0]];
+        //}
+        rsort($array);
+        return $array;
+        
+    }
+    private function findSuchString($text1,$text2) {
+  
+        $how1 = strlen($text1);
+        $how2 = strlen($text2);
+
+        if ($how1 > $how2) $how = $how1;
+        else $how = $how2;
+        $correct = 0;
+        for ($i=0;$i< $how;$i++) {
+
+            if (isset($text1[$i]) and isset($text2[$i]) and $text1[$i] != $text2[$i] ) $correct--;
+            else if (isset($text1[$i]) and isset($text2[$i]) and  $text1[$i] == $text2[$i]) $correct++;
+        }
+        $result = ($how1 + $how2) / 2;
+        return $correct / $result;
+      }
+    
+    
+}

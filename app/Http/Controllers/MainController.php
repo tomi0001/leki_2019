@@ -23,7 +23,6 @@ class MainController
         if ( (Auth::check()) ) {
             $kalendar = new calendar();
             $Drugs = new Drugs;
-            //$hours_of_reception = new \App\Http\Controllers\hours_of_reception();
             $kalendar->set_date($month,$action,$day,$year);
             $how_day_month = $kalendar->check_month($kalendar->month,$kalendar->year);
             $back_month = $kalendar->return_back_month($kalendar->month,$kalendar->year);
@@ -33,7 +32,6 @@ class MainController
             $back_year  = $kalendar->return_back_year($kalendar->year);
             $listProduct = $Drugs->selectProduct(Auth::User()->id);
             $Drugs->selectDrugsMonth($kalendar->year,$kalendar->month);
-            //var_dump($Drugs->dayMonth);
             $Drugs->selectDrugs(Auth::User()->id,$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day);
             $Drugs->showSumDrugs(Auth::User()->id,$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day);
             $sumAlkohol = $Drugs->sumPercentAlkohol();
@@ -43,32 +41,8 @@ class MainController
             $allEquivalent = $Drugs->sumAllEquivalent($equivalent);
             $benzo = $Drugs->selectBenzo();
             $Drugs->selectColor($Drugs->list);
-            //print ("<pre>");
-            //print_r ($Drugs->list);
-            //$color = $Drugs->selectColor($Drugs->list);
-            //$colorforday = $Drugs->selectColorforday($color);
             $i = count($Drugs->list);
             $ifDescription = $Drugs->checkIfDescription($Drugs->list);
-            //var_dump($Drugs->color);
-            /*
-            $i = 0;
-            foreach ($Drugs->list as $list) {
-                print $list->name;
-                if (isset($Drugs->color_how_product[$i])) {
-                    print $Drugs->color_how_product[$i];
-                }
-                print "<br>";
-                $i++;
-                
-            }
-             * */
-             
-            //var_dump($Drugs->color_how_product);
-            //$hours_of_reception->select_common_hour();
-            //$hours_of_reception->set_minutes(60 * $hours_of_reception->min);
-            //$patients = $this->select_patients();
-            //$hours_of_reception->check_hour_closed();
-            //$hours_of_reception->set_array_hour_doctor(60 * $hours_of_reception->min);
 
             return view("Main.main")
                     ->with("month",$kalendar->month)

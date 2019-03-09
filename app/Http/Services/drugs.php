@@ -57,29 +57,48 @@ class drugs
             return true;
         }
     }
+    
+    private function selectIdGroup(int $id) {
+        $forwarding = new Forwarding_group;
+        $list = $forwarding->where("id_substances",$id)->get();
+        return $list;
+        
+    }
+    private function selectIdSubstance(int $id) {
+        $forwarding = new Forwarding_substance;
+        $list = $forwarding->where("id_products",$id)->get();
+        return $list;
+        
+    }
     public function selectGroupName(int $id) {
-        $group = new Forwarding_group;
+        $group = new Group;
         $arrayGroup = array();
+        $idGroup = $this->selectIdGroup($id);
         $i = 0;
-        //print $id;
         $list = $group
-                ->selectRaw("forwarding_groups.id_substances as id_sub")
+                ->selectRaw("forwarding_groups.id_substances as id_su")
                 ->selectRaw("forwarding_groups.id_groups as id_gro")
                 ->selectRaw("groups.name as name")
-                ->join("groups","groups.id","forwarding_groups.id_groups")
-                //->join("forwarding_substances","")
+                ->rightjoin("forwarding_groups","groups.id","forwarding_groups.id_groups")
+
                 ->where("groups.id_users",Auth::User()->id)
-                //->groupBy("forwarding_groups.id_groups")
-                //->having("forwarding_groups.id_substances",$id)
+                ->groupBy("forwarding_groups.id_groups")
+                ->orderBy("name")
                 ->get();
         foreach ($list as $listGroup)  {
-            //print $id;
-            //print $listGroup->id_sub . " ";
-            if ($listGroup->id_sub == $id) {
+            $bool = false;
+            
+            foreach ($idGroup as $id_Gro) {
+                if ($listGroup->id_gro == $id_Gro->id_groups) {
+                    $bool = true;
+                }
+                
+            }
+            
+            if ($bool == true) {
                 $arrayGroup[$i][0] = $listGroup->id_gro;
                 $arrayGroup[$i][1] = $listGroup->name;
                 $arrayGroup[$i][2] = true;
-                //print "s";
             }
             else {
                 $arrayGroup[$i][0] = $listGroup->id_gro;
@@ -91,10 +110,49 @@ class drugs
         return $arrayGroup;
         
     }
+    
+   public function selectSubstanceName(int $id) {
+        $group = new Substances;
+        $arrayGroup = array();
+        $idGroup = $this->selectIdSubstance($id);
+        $i = 0;
+        $list = $group
+                ->selectRaw("forwarding_substances.id_products as id_pro")
+                ->selectRaw("forwarding_substances.id_substances as id_sub")
+                ->selectRaw("substances.name as name")
+                ->join("forwarding_substances","substances.id","forwarding_substances.id_substances")
+                ->where("substances.id_users",Auth::User()->id)
+                ->groupBy("forwarding_substances.id_substances")
+                ->orderBy("name")
+                ->get();
+        foreach ($list as $listGroup)  {
+            $bool = false;
+            
+            foreach ($idGroup as $id_Gro) {
+                if ($listGroup->id_sub == $id_Gro->id_substances) {
+                    $bool = true;
+                }
+                
+            }
+            
+            if ($bool == true) {
+                $arrayGroup[$i][0] = $listGroup->id_sub;
+                $arrayGroup[$i][1] = $listGroup->name;
+                $arrayGroup[$i][2] = true;
+            }
+            else {
+                $arrayGroup[$i][0] = $listGroup->id_sub;
+                $arrayGroup[$i][1] = $listGroup->name;
+                $arrayGroup[$i][2] = false;
+            }
+            $i++;
+        }
+        return $arrayGroup;
+        
+    }
     public function selectGroupId(int $id) {
         $group = new Group;
         $list = $group->where("id",$id)->first();
-        //print $list->name;
         return $list;
     }
     public function updateName(int $id) {
@@ -105,14 +163,32 @@ class drugs
         $Forwarding_group = new Forwarding_group;
         $Forwarding_group->where("id_substances",$id)->delete();
         $this->addForwardingSubstance($id);
+        $this->updateName2($id,"substances");
+    }
+    public function updateProduct(int $id) {
+        $Forwarding_group = new Forwarding_substance;
+        $Forwarding_group->where("id_products",$id)->delete();
+        $this->addForwardingProduct($id);
+        $this->updateName2($id,"products");
+    }
+    private function updateName2(int $id,string $table) {
+        DB::table($table)->where("id",$id)->update(["name"=>Input::get("name")]);
+        
     }
     private function addForwardingSubstance(int $id) {
-        //$Forwarding_group = new Forwarding_group;
         for ($i = 0;$i < count(Input::get("id"));$i++) {
-            //print "s";
             $Forwarding_group = new Forwarding_group;
             $Forwarding_group->id_substances = $id;
             $Forwarding_group->id_groups = Input::get("id")[$i];
+            $Forwarding_group->save();
+        }
+        
+    }
+    private function addForwardingProduct(int $id) {
+        for ($i = 0;$i < count(Input::get("id"));$i++) {
+            $Forwarding_group = new Forwarding_substance;
+            $Forwarding_group->id_products = $id;
+            $Forwarding_group->id_substances = Input::get("id")[$i];
             $Forwarding_group->save();
         }
         
@@ -281,10 +357,7 @@ class drugs
         
         foreach ($list as $description) {
             $description->description = $this->charset_utf_fix($description->description);
-            //$descriptio->date = 'ddd';
-            //print "s";
         }
-        //return $description;
     }
     public function checkSubstanceArray( $arraySubstance,int $id_users) :bool {
         $Substance = new Substances; 
@@ -347,52 +420,52 @@ class drugs
                    ->orderBy("DAT","DESC")->get();
         
 
-       $tablica = array();
+       $array = array();
        $data1 = array();
-       $czas = array();
-       $dawka = array();
+       $time = array();
+       $dose = array();
         $j = 0;
         $z = 0;
         $i = 0;
         foreach ($list as $rekord2) {
             $data1[$i] = explode(" ",$rekord2->date);
-            $dawka[$i] = $rekord2->portion;
+            $dose[$i] = $rekord2->portion;
             $data = explode("-",$data1[$i][0]);
             $data2 = explode(":",$data1[$i][1]);
-            $czas[$i] = mktime($data2[0],$data2[1],$data2[2],$data[1],$data[2],$data[0]);
+            $time[$i] = mktime($data2[0],$data2[1],$data2[2],$data[1],$data[2],$data[0]);
             if ($i == 0) {
-                $tablica[$j][0] = $dawka[$i];
-                $tablica[$j][1] = $data1[$i][0];
-                $tablica[$j][2] = $data1[$i][0];
-                $tablica[$j][3] = 0;
+                $array[$j][0] = $dose[$i];
+                $array[$j][1] = $data1[$i][0];
+                $array[$j][2] = $data1[$i][0];
+                $array[$j][3] = 0;
               
             }
-            elseif ($i != 0 and (($czas[$i-1]  - 146400) >  $czas[$i]))   {
-                $tablica[$j][2] = $data1[$i-1][0];   
-                $tablica[$j][3] = 1;
+            elseif ($i != 0 and (($time[$i-1]  - 146400) >  $time[$i]))   {
+                $array[$j][2] = $data1[$i-1][0];   
+                $array[$j][3] = 1;
                 $j++;               
-                $tablica[$j][0] = $dawka[$i];
-                $tablica[$j][1] = $data1[$i][0];
-                $tablica[$j][2] = $data1[$i][0];
-                $tablica[$j][3] = 0;
+                $array[$j][0] = $dose[$i];
+                $array[$j][1] = $data1[$i][0];
+                $array[$j][2] = $data1[$i][0];
+                $array[$j][3] = 0;
                 
                 //break;
             }
-            elseif ($i != 0 and $dawka[$i] != $dawka[$i-1]) {
-                $tablica[$j][2] = $data1[$i-1][0];
+            elseif ($i != 0 and $dose[$i] != $dose[$i-1]) {
+                $array[$j][2] = $data1[$i-1][0];
                 $j++;
-                $tablica[$j][0] = $dawka[$i];
-                $tablica[$j][1] = $data1[$i][0];
-                $tablica[$j][2] = $data1[$i][0];
-                $tablica[$j][3] = 0;
+                $array[$j][0] = $dose[$i];
+                $array[$j][1] = $data1[$i][0];
+                $array[$j][2] = $data1[$i][0];
+                $array[$j][3] = 0;
                 
                 
             }
             elseif ($i == count($list)-1) {
-                $tablica[$j][0] = $dawka[$i];
-                $tablica[$j][2] = $data1[$i][0];
+                $array[$j][0] = $dose[$i];
+                $array[$j][2] = $data1[$i][0];
                 
-                $tablica[$j][3] = 0;
+                $array[$j][3] = 0;
         
             }
             
@@ -400,7 +473,7 @@ class drugs
             $i++;
         }
          
-       return $tablica;
+       return $array;
        
     }
     
@@ -540,12 +613,15 @@ class drugs
             $Forwading->save();
         }
     }
+    
     public function selectProduct(int $id_users) {
         $Product  = new Product;
-        $list = $Product->where("id_users",$id_users)->get();
+        $list = $Product->where("id_users",$id_users)
+                ->orderBy("name")->get();
         return $list;
         
     }
+     
     public function processPrice($listDrugs) {
         
         foreach ($listDrugs as $list) {
@@ -688,9 +764,11 @@ class drugs
     }
     public function selectSubstance(int $id_users) {
         $substance = new Substances;
-        $list = $substance->where("id_users",$id_users)->get();
+        $list = $substance->where("id_users",$id_users)
+                ->orderBy("name")->get();
         return $list;
     }
+
     public function selectBenzo() {
         $substances = new Substances;
         $list = $substances->where("id_users",Auth::User()->id)
@@ -738,8 +816,6 @@ class drugs
         foreach ($drugsList as $list) {
            $i = 0;
            $array = array();
-           //$i = 0;
-           //$array[0] = 0;
             $idSub = $forwarding_substances->where("id_products",$list->id)->get();
             foreach ($idSub as $idSubstances) {
                 $idGru = $forwarding_group->where("id_substances",$idSubstances->id_substances)->get();
@@ -749,38 +825,23 @@ class drugs
                             if ($color2->color == null or $color2->color == 0){
                                 continue;
                             }
-                            
-                            //print "heelo ";
-                            //print  $color2->color;
-                            //if ($day == true) {
-                                //if ($i == 0) {
-                                  //  $array[] = (int) $color2->color;
-                                //}
-                                //else {
+
                                     $array[] += (int) $color2->color;
-                                //}
-                            //}
-                            //$colorarray[] = (int) $color2->color;
+
                             $i++;
                             
 
                     }
                 }
-                //print "s";
                 
             }
             $bool = true;
-            //if ($day == true) {
                 $this->colorDrugs[] = $this->colorForDay(array_product(array_unique($array)));
-                //$i++;
-            //}
            }
            if (empty($colorarray)) {
                return 0;
            }
-           //if ($bool == true and $day == false) {
-             //  return $this->colorForDay((array_product(array_unique($colorarray))));
-           //}
+
     }
      public function selectColorforday($drugsList) {
         $Product = new product;
@@ -790,17 +851,13 @@ class drugs
         
         
         $colorarray = array();
-        //$array = array
         $bool = false;
         if (count($drugsList) == 0) {
             return -1;
         }
         $color3 = "";
            foreach ($drugsList as $list) {
-           //$i = 0;
-           //$array = array();
-           //$i = 0;
-           //$array[0] = 0;
+
             $idSub = $forwarding_substances->where("id_products",$list->id)->get();
             foreach ($idSub as $idSubstances) {
                 $idGru = $forwarding_group->where("id_substances",$idSubstances->id_substances)->get();
@@ -810,31 +867,18 @@ class drugs
                             if ($color2->color == null or $color2->color == 0){
                                 continue;
                             }
-                            
-                            //print "heelo ";
-                            //print  $color2->color;
-                            //if ($day == true) {
-                                //if ($i == 0) {
-                              //      $array[] = (int) $color2->color;
-                                //}
-                                //else {
-                                    //$array[$i-1] += (int) $color2->color;
-                                //}
-                            //}
+
                             $colorarray[] = (int) $color2->color;
-                            //$i++;
+
                             
 
                     }
                 }
-                //print "s";
+
                 
             }
             $bool = true;
-            //if ($day == true) {
-              //  $this->colorDrugs[] = $this->colorForDay(array_product(array_unique($array)));
-                //$i++;
-            //}
+
            }
            if (empty($colorarray)) {
                return 0;
@@ -919,7 +963,8 @@ class drugs
     
     public function selectGroup(int $id_users) {
         $Group = new Group;
-        $list = $Group->where("id_users",$id_users)->get();
+        $list = $Group->where("id_users",$id_users)
+                ->orderBy("name")->get();
         return $list;
         
     }
@@ -927,5 +972,10 @@ class drugs
         $Substances = new Substances;
         $name = $Substances->where("id_users",Auth::User()->id)->where("id",$id)->first();
         return $name->name;
+    }
+    public function selectNameProduct(int $id) {
+        $Product= new product;
+        $name = $Product->where("id_users",Auth::User()->id)->where("id",$id)->first();
+        return $name->name;        
     }
 }

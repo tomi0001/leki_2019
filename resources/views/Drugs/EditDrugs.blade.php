@@ -77,6 +77,42 @@
     <div class="title0">
 
             
+            EDYTUJ ISTNIEJĄCE PRODUKTY
+           
+    </div>
+     <form method="get" id='addProductAction'>
+                <table class="table center">
+                    <tr>
+                        <td>
+                            Nazwa Produktu
+                        </td>
+                       
+                    
+                    
+                    
+
+                        <td  class="center">
+                            <select name="product" class="form-control form-control-lg" onChange="EditProduct('{{url('/Produkt/editProduct')}}')">
+                                <option value="" selected></option>
+                                @foreach ($listProduct as $listPro)
+                                    <option value="{{$listPro->id}}">{{$listPro->name}}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                        
+                    </tr>
+                </table>
+                <div id="ajax_editProduct" class='ajax' style="overflow-y: scroll;  height:300;">
+                    
+                </div>
+                
+                
+      </form>
+</div>
+<div id="add_drugs">
+    <div class="title0">
+
+            
             EDYTUJ SWOJE USTAWIENIA
            
     </div>

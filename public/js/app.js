@@ -124,6 +124,16 @@
             $("#ajax_editSubstance").load(url + "?id=" + id);
         }
     }
+    function EditProduct(url) {
+        var id = $("select[name=product]").val();
+        if (id != "") {
+            $("#ajax_editProduct").load(url + "?id=" + id);
+        }
+        
+    }
+    function changeProduct(url,id) {
+        $("#productResult").load(url + "?" +  $( "form" ).serialize() + "&id_sub=" + id);
+    }
     function changeSubstance(url,id) {
                /*         var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                 var data = $('form#changeSubstance').serialize();

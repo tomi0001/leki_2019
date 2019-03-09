@@ -25,12 +25,12 @@ class UserController
     public function registerSubmit() {
         $User = new User2;
         $User->CheckFormRegister();
-        if (count($controllerUser->error) != 0) {
+        if (count($User->error) != 0) {
             return Redirect("/User/Register")->with("error",$controllerUser->error)
                     ->withInput();
         }
         else {
-            $controllerUser->saveUser();
+            $User->saveUser();
             return Redirect("/User/Login")->with("succes","Możesz się teraz zalogować");
         }
         

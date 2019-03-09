@@ -29,8 +29,9 @@ class search
     public $string;
     private $sort = "date";
     public $id_product =array();
+    public $question;
     public function checkField() {
-    //    if (Input::get("product") != "")
+
         
     }
     public function find() {
@@ -72,15 +73,6 @@ class search
                 and (count($this->arrayFindGro) == 0 or $this->arrayFindGro[0][0] <= 0.5)) {
             return false;
         }
-        //else if (count($this->arrayFindSub) == 0 or $this->arrayFindSub[0][0] <= 0.5) {
-          //  return false;
-        //}
-        //else if (count($this->arrayFindGro) == 0 or $this->arrayFindGro[0][0] <= 0.5) {
-          //  return false;
-        //}
-        //for ($i=0;$i < count($this->arrayFindPro);$i++) {
-          //  if ()
-        //}
         return true;
     }
      
@@ -88,7 +80,7 @@ class search
     public function selectIdProduct() {
         $product = new product;
         $id = $product->where("name",$this->string)->first();
-        if (count($id) != 0) {
+        if (isset($id) ) {
             array_push($this->id_product, $id->id);
         }
         
@@ -101,7 +93,6 @@ class search
                 ->where("substances.name",$this->string)->get();
         $i = 0;
         foreach ($id as $id_product) {
-            //$this->id_product[$i] = $id_product->id;
             array_push($this->id_product,$id_product->id);
             $i++;
         }
@@ -119,7 +110,6 @@ class search
         $i = 0;
         foreach ($id as $id_product) {
             array_push($this->id_product,$id_product->id);
-            //print $id_product->name . "<br>";
             $i++;
         }
         
@@ -144,13 +134,68 @@ class search
             $this->sort = "hour";
         }
     }
+    private function setWhere($bool,$search) {
+        if (count($this->id_product) == 0 and (Input::get("data1") == "" or Input::get("data2") == "")) {
+            
+            $data2 = date("Y-m-d");
+            $data1 = date("Y-m-d", time() - 2592000);
+        }
+        else {
+            $data1 = Input::get("data1");
+            $data2 = Input::get("data2");
+        }
+        if ($data1 != "") {
+            $this->question->where("usees.date",">=",$data1);
+        }
+        if ($data2 != "") {
+            $this->question->where("usees.date","<=",$data2);
+        }
+        if (Input::get("dose1") != "" and Input::get("day") == "") {
+            $this->question->where("usees.portion",">=",Input::get("dose1"));
+        }
+        if (Input::get("dose2") != "" and Input::get("day") == "") {
+            $this->question->where("usees.portion","<=",Input::get("dose2"));
+        }
+        if (Input::get("hour1") != "") {
+            $this->question->whereRaw("hour(usees.date) >=  " . Input::get("hour1"));
+        }
+        if (Input::get("hour2") != "")  {
+            $this->question->whereRaw("hour(usees.date)<=" . Input::get("hour2"));
+        }
+        if (Input::get("search") != "") {
+            $this->question->where("descriptions.description","like","%" . $search . "%");
+        }
+        if (Input::get("inDay") != "") {
+            $this->question->where("descriptions.description","!=", "");
+        }
+        
+        if ($bool == true) {
+                $this->question->whereIn("products.id",$this->id_product);
+        }
+        
+        
+    }
+    private function setGroup($hour) {
+               if (Input::get("day") != "") {
+                    $this->question->groupBy(DB::Raw("(DATE(IF(HOUR(usees.date) >= '$hour', usees.date,Date_add(usees.date, INTERVAL - 1 DAY) )) )"));
+                    if (Input::get("dose1") != "" ) {
+                      $this->question->havingRaw("sum(usees.portion) >= " . Input::get("dose1"));
+                    }
+                    if (Input::get("dose2") != "" ) {
+                      $this->question->havingRaw("sum(usees.portion) <= " . Input::get("dose2"));
+                    }
+                }
+                else {
+                    $this->question->groupBy("usees.id");
+                }
+        
+    }
     public function createQuestions($bool) {
         $drugs = new drugs;
-        $usee =  usee::query();
+        $this->question =  usee::query();
         $hour = $this->selectHourStart(Auth::User()->id);
         $search = $drugs->charset_utf_fix2(Input::get("search"));
-        $usee->select( DB::Raw("(DATE(IF(HOUR(usees.date) >= '$hour', usees.date,Date_add(usees.date, INTERVAL - 1 DAY) )) ) as dat  "))   
-                //->selectRaw()
+        $this->question->select( DB::Raw("(DATE(IF(HOUR(usees.date) >= '$hour', usees.date,Date_add(usees.date, INTERVAL - 1 DAY) )) ) as dat  "))   
                 ->selectRaw("hour(usees.date) as hour")
                 ->selectRaw("round(sum(usees.portion),2) as por")
                 ->selectRaw("day(usees.date) as day")
@@ -169,80 +214,18 @@ class search
                 ->leftjoin("forwarding_descriptions","usees.id","forwarding_descriptions.id_usees")
                 ->leftjoin("descriptions","descriptions.id","forwarding_descriptions.id_descriptions")
                 ->where("usees.id_users",Auth::User()->id);
-        if (count($this->id_product) == 0 and (Input::get("data1") == "" or Input::get("data2") == "")) {
-            
-            $data2 = date("Y-m-d");
-            $data1 = date("Y-m-d", time() - 2592000);
-        }
-        else {
-            $data1 = Input::get("data1");
-            $data2 = Input::get("data2");
-        }
-        if ($data1 != "") {
-            $usee->where("usees.date",">=",$data1);
-        }
-        if ($data2 != "") {
-            $usee->where("usees.date","<=",$data2);
-        }
-        if (Input::get("dose1") != "" and Input::get("day") == "") {
-            $usee->where("usees.portion",">=",Input::get("dose1"));
-        }
-        if (Input::get("dose2") != "" and Input::get("day") == "") {
-            $usee->where("usees.portion","<=",Input::get("dose2"));
-        }
-        if (Input::get("hour1") != "") {
-            $usee->whereRaw("hour(usees.date) >=  " . Input::get("hour1"));
-        }
-        if (Input::get("hour2") != "")  {
-            $usee->whereRaw("hour(usees.date)<=" . Input::get("hour2"));
-        }
-        if (Input::get("search") != "") {
-            $usee->where("descriptions.description","like","%" . $search . "%");
-        }
-        if (Input::get("inDay") != "") {
-            $usee->where("descriptions.description","!=", "");
-        }
-        
-        if ($bool == true) {
-                $usee->whereIn("products.id",$this->id_product);
-        }
-        
-        
-                if (Input::get("day") != "") {
-                    //$sort = "por";
-                    $usee->groupBy(DB::Raw("(DATE(IF(HOUR(usees.date) >= '$hour', usees.date,Date_add(usees.date, INTERVAL - 1 DAY) )) )"));
-                    //$usee->groupBy("usees.id");
-                    if (Input::get("dose1") != "" ) {
-                      $usee->havingRaw("sum(usees.portion) >= " . Input::get("dose1"));
-                    }
-                    if (Input::get("dose2") != "" ) {
-                      $usee->havingRaw("sum(usees.portion) <= " . Input::get("dose2"));
-                    }
-                }
-                else {
-                    $usee->groupBy("usees.id");
-                    //d$sort = "portion";
-                }
+
+        $this->setWhere($bool,$search);
+        $this->setGroup($hour);
+         
              $this->setSort();
-            $usee->orderBy($this->sort,"DESC");
-            $list = $usee->paginate(10);
-        //$list = $usee->paginate(10);
-        //$list = [1,1];
-        
-        //print count($paginate);
-        //foreach ($list as $l) {
-          //  print $l->name;
-        //}
+            $this->question->orderBy($this->sort,"DESC");
+            $list = $this->question->paginate(10);
+
         return $list;
         
     }
-    //private function devisionString($string,$table) {
-        //$explode = explode(",",$string);
-        //for ($i=0;$i < count($explode);$i++) {
-            //$this->findString($explode[$i],$table);
-        //}
-        
-    //}
+
     
     public function changeArray($list) {
         $day = array();
@@ -287,9 +270,7 @@ class search
                 }
 
         }
-        //if ($i == 0) {
-            //return [[0,0],[0,0]];
-        //}
+
         rsort($array);
         return $array;
         

@@ -63,7 +63,6 @@ class AddDrugsController
             }
             else {
                 $id = $Drugs->saveProduct(Input::get("name"),Auth::User()->id,Input::get("percent"),Input::get("portion"),Input::get("price"),Input::get("how"));
-                //saveProduct($name,$id_users,$percent,$portion,$price,$how)
                 $Drugs->addForwadindSubstance($id,Input::get("substance"));
                 return View("ajax.succes")->with("succes","Dodano pomyslnie produkt");
             }
@@ -75,7 +74,6 @@ class AddDrugsController
         if ( (Auth::check()) ) {
             $Drugs = new Drugs;
             $check = $Drugs->checkSubstances(Input::get("name"),Auth::User()->id);
-            //var_dump( Input::get("name"));
             $bool = $Drugs->checkGroupArray(Input::get("group"),Auth::User()->id);
             if (Input::get("name") == "") {
                  return View("ajax.error")->with("error","Wpisz nazwę");
@@ -85,8 +83,6 @@ class AddDrugsController
             }
             else if($check == false) {
                 return View("ajax.error")->with("error","Już jest substancja o takiej nazwie");
-                
-                //$Drugs->addSubstances()
             }
             else {
                 $Drugs->addSubstances(Input::get("group"),Input::get("equivalent"),Input::get("name"),Auth::User()->id);

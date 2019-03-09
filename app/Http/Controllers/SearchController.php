@@ -28,7 +28,6 @@ class SearchController {
             $drugs = new drugs;
             $bool = $search->find();
             $error = "";
-            //print Input::get("products");
             if ($bool == false) {
                 $list = $search->createQuestions($bool);
                 if (count($list) == 0) {
@@ -53,12 +52,7 @@ class SearchController {
                 return View("search.searchAction")->with("listSearch",$list)->with("i",0)
                         ->with("day",$day)->with("inDay",Input::get("day"))
                         ->with("colorDrugs",$drugs->colorDrugs)->with("error",$error);
-                //print $search->string;
-                //var_dump($search->id_product);
-                //$search->createQuestions(true,$search->type,$search->string);
             }
-            
-            //$search->createQuestions();
         }
         
     }

@@ -22,12 +22,13 @@ class EditDrugsController
     public function EditDrugs() {
         if ( (Auth::check()) ) {
             $drugs = new Drugs;
-            //Password::sendResetLink(['id' => Auth::User()->id]);
             $listGroups = $drugs->selectGroup(Auth::User()->id);
             $listSubstance = $drugs->selectSubstance(Auth::User()->id);
+            $listProduct = $drugs->selectProduct(Auth::User()->id);
             return View("Drugs.EditDrugs")->with("listGroups",$listGroups)
                     ->with("start_day",Auth::User()->start_day)
-                    ->with("listSubstance",$listSubstance);
+                    ->with("listSubstance",$listSubstance)
+                    ->with("listProduct",$listProduct);
         }
         
     }
@@ -43,32 +44,58 @@ class EditDrugsController
         if ( (Auth::check()) ) {
             $group = $drugs->selectGroupName(Input::get("id"));
             $name = $drugs->selectNameSubstance(Input::get("id"));
-            //print "lasdsf";
             return View("ajax.EditSubstance")->with("list",$group)
                     ->with("id",Input::get("id"))->with("name",$name);
         }
         
     }
-    public function changeSubstance() {
-        //var_dump(Input::get("id"));
+    public function EditProduct() {
         $drugs = new Drugs;
         if ( (Auth::check()) ) {
-            //print Input::get("id_sub");
+            $substance = $drugs->selectSubstanceName(Input::get("id"));
+            $name = $drugs->selectNameProduct(Input::get("id"));
+            return View("ajax.EditProduct")->with("list",$substance)
+                    ->with("id",Input::get("id"))->with("name",$name);
+        }
+        
+    }
+    public function changeSubstance() {
+        $drugs = new Drugs;
+        if ( (Auth::check()) ) {
             $bool = $drugs->ifIdIsUsera("substances",Input::get("id_sub"));
             if ($bool == false) {
-                return View("ajax.error")->with("error","Próbujesz zmodyfikować nie swoją grupę");
+                return View("ajax.error")->with("error","Próbujesz zmodyfikować nie swoją substancję");
             }
             if (Input::get("name") == "") {
                 return View("ajax.error")->with("error","Pole nazwa nie może być puste");
             }
             $bool = $drugs->checkName(Input::get("id_sub"),Input::get("name"),"substances");
             if ($bool == false) {
-                return View("ajax.error")->with("error","Już jest grupa o takiej nazwie");
+                return View("ajax.error")->with("error","Już jest substancja o takiej nazwie");
             }
             else {
                 $drugs->updateSubstance(Input::get("id_sub"));
-                //print (Input::get("id")[0]);
-                return View("ajax.succes")->with("succes","Pomyslnie zmodyfikowana grupa");
+                return View("ajax.succes")->with("succes","Pomyslnie zmodyfikowana substancja");
+            }
+        }
+    }
+    public function changeProduct() {
+        $drugs = new Drugs;
+        if ( (Auth::check()) ) {
+            $bool = $drugs->ifIdIsUsera("products",Input::get("id_sub"));
+            if ($bool == false) {
+                return View("ajax.error")->with("error","Próbujesz zmodyfikować nie swoją produkt");
+            }
+            if (Input::get("name") == "") {
+                return View("ajax.error")->with("error","Pole nazwa nie może być puste");
+            }
+            $bool = $drugs->checkName(Input::get("id_sub"),Input::get("name"),"products");
+            if ($bool == false) {
+                return View("ajax.error")->with("error","Już jest produkt o takiej nazwie");
+            }
+            else {
+                $drugs->updateProduct(Input::get("id_sub"));
+                return View("ajax.succes")->with("succes","Pomyslnie zmodyfikowana produkt");
             }
         }
     }

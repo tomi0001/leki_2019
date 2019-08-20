@@ -45,6 +45,78 @@ class MainDrugsController
             }
             
         }
+        
+        public function editRegistration() {
+         $drugs = new Drugs;
+         if ( (Auth::check()) ) {
+             $listProduct = $drugs->selectProduct(Auth::User()->id);
+             $info = $drugs->selectRegistration(Input::get("idDrugs"));
+             $date = explode(" ",$info->date);
+             return View("ajax.ChangeRegistration")->with("listProduct",$listProduct)
+                     ->with("date1",$date[0])->with("date2",$date[1])->with("portion",$info->portion)
+                     ->with("id",$info->id_products)->with("i",Input::get("i"))
+                     ->with("idDrugs",Input::get("idDrugs"));
+         }
+       }
+       
+       public function updateShowRegistration() {
+           $drugs = new Drugs;
+           if ( (Auth::check()) ) {
+               $drugs->selectRegistration2(Input::get("id"));
+               $equivalent = $drugs->sumEquivalent($drugs->list);
+               $benzo = $drugs->selectBenzo();
+               $drugs->processPrice($drugs->list);
+               return View("ajax.ShowUpdatesDrugs")->with("listDrugs",$drugs->list)
+                       ->with("equivalent",$equivalent)->with("benzo",$benzo)->with("i",Input::get("i"));
+           }
+       }
+       public function closeForm() {
+           $drugs = new Drugs;
+           if ( (Auth::check()) ) {
+               $drugs->selectRegistration2(Input::get("id"));
+               $equivalent = $drugs->sumEquivalent($drugs->list);
+               $benzo = $drugs->selectBenzo();
+               $drugs->processPrice($drugs->list);
+               return View("ajax.ShowUpdatesDrugs")->with("listDrugs",$drugs->list)
+                       ->with("equivalent",$equivalent)->with("benzo",$benzo)->with("i",Input::get("i"));
+
+           }
+       }
+        public function updateRegistration() {
+            $Drugs = new Drugs;
+            if ( (Auth::check()) ) {
+                $date = $Drugs->checkDate(Input::get("date"),Input::get("time"));
+                if (Input::get("nameProduct") == "") {
+                    array_push($this->error, "Wpisz nazwę");
+                }
+                if ($date == -1 or $date == -2) {
+                    array_push($this->error, "Błędna data");
+                }
+                if (Input::get("portion") == "") {
+                    array_push($this->error, "Uzupełnij pole dawka");
+                }
+                else if (!is_numeric(Input::get("portion"))) {
+                    array_push($this->error, "Pole dawka musi być numeryczne");
+                }
+                if ((Input::get("date") == "" or  Input::get("time") == "")) {
+                    array_push($this->error, "Uzupełnij pole data i czas");
+                }
+                if (count($this->error) != 0) {
+                    return View("ajax.error_array")->with("error",$this->error);
+                }
+
+                else {
+                    $idProduct = $Drugs->selectIdProduct(Input::get("id"));
+                    
+                    $price = $Drugs->sumPrice(Input::get("portion"),$idProduct);
+                    $price = $Drugs->sumPrice(Input::get("portion"),Input::get("nameProduct"));
+                    $Drugs->editRegistration($Drugs->date,Input::get("id"),$price);
+                    return View("ajax.succes")->with("succes","Pomyslnie dodano");
+                     
+                     
+                }
+            }
+        }
      public function addDescriptionsAction() {
          $Drugs = new Drugs;
          if (Input::get("description") == "") {
@@ -56,6 +128,7 @@ class MainDrugsController
          }
          
      }
+
      public function deleteDrugs() {
          $Drugs = new Drugs;
          $bool = $Drugs->checkDrugs(Auth::User()->id,Input::get("id"));

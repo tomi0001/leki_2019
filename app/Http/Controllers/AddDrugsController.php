@@ -34,17 +34,20 @@ class AddDrugsController
     }
     public function addProductAction() {
         if ( (Auth::check()) ) {
+            
+            
             $Drugs = new Drugs;
             $Product = new Product;
             $bool  = $Drugs->checkIfHow(Input::get("price"),Input::get("how"));
             $bool2 = $Drugs->checkProduct(Input::get("name"),Auth::User()->id);
-            $bool3 = $Drugs->checkSubstanceArray( Input::get("Substance"),Auth::User()->id);
+            $bool3 = $Drugs->checkSubstanceArray( Input::get("substance"),Auth::User()->id);
             if (Input::get("name") == "") {
                 array_push($this->error, "Wpisz nazwę");
             }
             if (Input::get("percent") !=  "" and !is_numeric(Input::get("percent"))) {
                 array_push($this->error, "Pole procent musi być numeryczne");
             }
+            
             if ($bool2 == false) {
                 array_push($this->error, "Juz jest substancja o takiej nazwie");
             }
@@ -61,11 +64,15 @@ class AddDrugsController
                 return View("ajax.error_array")->with("error",$this->error);
                 
             }
+             
+             
             else {
                 $id = $Drugs->saveProduct(Input::get("name"),Auth::User()->id,Input::get("percent"),Input::get("portion"),Input::get("price"),Input::get("how"));
                 $Drugs->addForwadindSubstance($id,Input::get("substance"));
                 return View("ajax.succes")->with("succes","Dodano pomyslnie produkt");
             }
+                
+             
         }
         
         

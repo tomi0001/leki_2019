@@ -10,6 +10,7 @@
             
             {{$i+1}}
         </div>
+        <div id="EditDrugs{{$i}}">
         <table class='table center'>
             <tr>
                 <td class="center">
@@ -126,9 +127,10 @@
             @endif    
            
         </table>
-         
+        </div>
         <div id='sumbenzo{{$i}}' class='center'></div>
         <table class="table center">
+          
             <tr>
                 <td class="center">
                     
@@ -149,6 +151,20 @@
                 </td>
                 <td class="center">
                     <input type="button" class="btn btn-danger" onclick="delete_drugs('{{url('/ajax/delete_drugs')}}',{{$list->idDrugs}},{{$i}})" value="Usuń wpis">
+                </td>
+            </tr>
+            <tr>
+                <td class="center" colspan="2">
+                    <div id="updateDrugs{{$i}}">
+                        <input type="button" class="btn btn-success" onclick="edit_drugs('{{url('/ajax/edit_drugs')}}',{{$list->idDrugs}},{{$i}},'{{url('/ajax/update_drugs')}}','{{url('/ajax/show_update_drugs')}}')" value="Edytuj wpis">
+                    </div>
+                </td>
+            </tr>
+             <tr>
+                <td class="center" colspan="2">
+                    <div id="viewDrugs{{$i}}">
+                        
+                    </div>
                 </td>
             </tr>
             <tr>

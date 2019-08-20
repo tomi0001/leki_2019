@@ -195,7 +195,8 @@ class search
         $this->question =  usee::query();
         $hour = $this->selectHourStart(Auth::User()->id);
         $search = $drugs->charset_utf_fix2(Input::get("search"));
-        $this->question->select( DB::Raw("(DATE(IF(HOUR(usees.date) >= '$hour', usees.date,Date_add(usees.date, INTERVAL - 1 DAY) )) ) as dat  "))   
+        $this->question
+                ->select( DB::Raw("(DATE(IF(HOUR(usees.date) >= '$hour', usees.date,Date_add(usees.date, INTERVAL - 1 DAY) )) ) as dat  "))   
                 ->selectRaw("hour(usees.date) as hour")
                 ->selectRaw("round(sum(usees.portion),2) as por")
                 ->selectRaw("day(usees.date) as day")
@@ -204,15 +205,16 @@ class search
                 ->selectRaw("usees.portion as portion")
                 ->selectRaw("usees.date as date")
                 ->selectRaw("usees.id_products as id")
+                
                 ->selectRaw("usees.id as id_usees")
                 ->selectRaw("descriptions.description as description")
                 ->selectRaw("descriptions.date as date_description")
                 ->selectRaw("usees.id_products as product")
                 ->selectRaw("products.name as name")
                 ->selectRaw("products.type_of_portion as type")
-                ->leftjoin("products","products.id","usees.id_products")
                 ->leftjoin("forwarding_descriptions","usees.id","forwarding_descriptions.id_usees")
                 ->leftjoin("descriptions","descriptions.id","forwarding_descriptions.id_descriptions")
+                ->leftjoin("products","products.id","usees.id_products")
                 ->where("usees.id_users",Auth::User()->id);
 
         $this->setWhere($bool,$search);

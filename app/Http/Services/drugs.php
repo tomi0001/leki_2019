@@ -47,6 +47,27 @@ class drugs
         return false;
         
     }
+    public function selectRegistration(int $id) {
+         $use = new usee;
+         $select = $use->where("id",$id)->where("id_users",Auth::User()->id)->first();
+         return $select;
+    }
+    public function selectRegistration2(int $id) {
+         $use = new usee;
+         $this->list = $use->join("products","products.id","usees.id_products")
+                 ->where("usees.id",$id)
+                 ->where("usees.id_users",Auth::User()->id)
+                 ->selectRaw("products.name as name")
+                ->selectRaw("products.how_percent as percent")
+                ->selectRaw("usees.price as price")
+                ->selectRaw("usees.date as date")
+                ->selectRaw("usees.portion as portion")
+                ->selectRaw("usees.id_products as id")
+                ->selectRaw("usees.id as idDrugs")
+                ->selectRaw("products.type_of_portion as type")
+                 ->get();
+
+    }
     public function checkName(int $id,string $name,string $table) {
         
         $gro = DB::table($table)->where("id","!=",$id)->where("name",$name)->first();
@@ -70,19 +91,21 @@ class drugs
         return $list;
         
     }
+    public function selectIdProduct(int $id) {
+        $Use = new usee;
+        $list = $Use->where("id",$id)->first();
+        return $list->id_products;
+        
+    }
     public function selectGroupName(int $id) {
         $group = new Group;
         $arrayGroup = array();
         $idGroup = $this->selectIdGroup($id);
         $i = 0;
-        $list = $group
-                ->selectRaw("forwarding_groups.id_substances as id_su")
-                ->selectRaw("forwarding_groups.id_groups as id_gro")
-                ->selectRaw("groups.name as name")
-                ->rightjoin("forwarding_groups","groups.id","forwarding_groups.id_groups")
 
+        $list = $group->selectRaw("groups.name as name")
+                ->selectRaw("groups.id as id_gro")
                 ->where("groups.id_users",Auth::User()->id)
-                ->groupBy("forwarding_groups.id_groups")
                 ->orderBy("name")
                 ->get();
         foreach ($list as $listGroup)  {
@@ -116,13 +139,10 @@ class drugs
         $arrayGroup = array();
         $idGroup = $this->selectIdSubstance($id);
         $i = 0;
-        $list = $group
-                ->selectRaw("forwarding_substances.id_products as id_pro")
-                ->selectRaw("forwarding_substances.id_substances as id_sub")
-                ->selectRaw("substances.name as name")
-                ->join("forwarding_substances","substances.id","forwarding_substances.id_substances")
+
+        $list = $group->selectRaw("substances.name as name")
+                    ->selectRaw("substances.id as id_sub")
                 ->where("substances.id_users",Auth::User()->id)
-                ->groupBy("forwarding_substances.id_substances")
                 ->orderBy("name")
                 ->get();
         foreach ($list as $listGroup)  {
@@ -242,7 +262,8 @@ class drugs
 	 "%u015B" => "ś",
 	 "%u017A" => "ź",
 	 "%u017C" => "ż",
-         "&nbsp" => " "
+         "%20" => " ",
+            "&nbsp" => " "
 	);
 	
 	return str_replace(array_keys($utf), array_values($utf), $string);
@@ -503,7 +524,8 @@ class drugs
          $selectIdSub3 = $forwarding_substances
                             ->orwherein("id_substances",$listIdSub)
                             ->groupBy("id_products")
-                            ->havingRaw("count(*) = $i")->get();
+                            ->havingRaw("count(*) = 0")
+                            ->get();
          $array = array();
          $i = 0;
          foreach ($selectIdSub3 as $selectIdSub4) {
@@ -538,6 +560,10 @@ class drugs
          }
         
         
+    }
+    public function editRegistration($date,int $idUse,$price) {
+        $Use = new usee;
+        $Use->where("id",$idUse)->update(["id_products"=>Input::get("nameProduct"),"portion"=>Input::get("portion"),"date"=>$date,"price" => $price]);
     }
     public function sumPrice($dose,$name) {
         $product = new product;
@@ -622,10 +648,15 @@ class drugs
         
     }
      
-    public function processPrice($listDrugs) {
+    public function processPrice($listDrugs,$price = "") {
         
         foreach ($listDrugs as $list) {
-            $list->price = $this->calculatePrice($list->price);
+            if ($price == "") {
+              $list->price = $this->calculatePrice($list->price);
+            }
+            else {
+                $list->price = $this->calculatePrice($price);
+            }
             
         }
     }
@@ -729,16 +760,17 @@ class drugs
                     ->selectRaw("usees.date as date")
                     ->selectRaw("usees.portion as portion")
                     ->where("forwarding_substances.id_products",$list->id)
-                    ->where("usees.id",$list->idDrugs)->get();
-            foreach ($tmp as $tmp2) {}
-               if (isset($tmp2) and $tmp2->equivalent != 0) {
+                    ->where("usees.id",$list->idDrugs)->first();
+            
+               if (isset($tmp) and $tmp->equivalent != 0 ) {
                    
-                $equivalent[$i] = $this->calculateEquivalent($tmp2->portion, $tmp2->equivalent, 10);
+                $equivalent[$i] = $this->calculateEquivalent($tmp->portion, $tmp->equivalent, 10);
+               
                }
                else {
                    $equivalent[$i] = 0;
                }
-
+               
             $i++;
         }
         return $equivalent;
@@ -978,4 +1010,5 @@ class drugs
         $name = $Product->where("id_users",Auth::User()->id)->where("id",$id)->first();
         return $name->name;        
     }
+
 }

@@ -39,6 +39,7 @@ class EditDrugsController
             return View("ajax.EditGroup")->with("list",$group);
         }
     }
+
     public function EditSubstance() {
         $drugs = new Drugs;
         if ( (Auth::check()) ) {

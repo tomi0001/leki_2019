@@ -96,6 +96,57 @@
         
         
     }
+    
+    
+    /*
+     * 
+     * @param {/ajax/edit_drugs} url
+     * @param {type} i
+     * @param {type} id
+     * @param {/ajax/update_drugs} url2
+     * @param {/ajax/show_update_drugs} url3
+     * @param {/ajax/closeForm} url4
+     * @returns {undefined}
+     * 
+     * 
+     */
+    function closeForm(url,i,id,url2,url3,url4) {
+        //alert(id);
+        $("#EditDrugs"+i).load(url4 + "?id=" + id + "&i=" + i);
+        $("#updateDrugs"+i).html("<input type='button' class='btn btn-success' onclick=edit_drugs('" + url + "'," + id +  "," + i  + ",'" + url2 + "','" + url3 + ",2') value='Edytuj wpis'>");
+    }
+    function edit_drugs(url,idDrugs,i,url2,url3,bool = false) {
+        $("#EditDrugs"+i).load(url + "?idDrugs=" + idDrugs + "&i=" + i);
+        //if (bool != true) {
+            $("#updateDrugs"+i).html("<input type='button' class='btn btn-success' onclick=update_drugs('"+ url +  "'," + idDrugs + "," +  i + ",'" + url2 + "','" + url3 + "') value='Uaktualnij wpis'>");
+        //}
+        //else if (bool == 2) {
+//            $("#updateDrugs"+i).html("<input type='button' class='btn btn-success' onclick=update_drugs('"+ url3 +  "'," + idDrugs + "," +  i + ",'" + url + "','" + url3 + "') value='Uaktualnij wpis'>");
+        //}
+        //else {
+  //          $("#updateDrugs"+i).html("<input type='button' class='btn btn-success' onclick=update_drugs('"+ url2 +  "'," + idDrugs + "," +  i + ",'" + url + "','" + url2 + "') value='Uaktualnij wpis'>");
+        //}
+        $("#viewDrugs"+i).html("");
+    }
+    function update_drugs(url,id,i,url2,url3) {
+        var name = $("#nameProduct").val();
+        var portion = $("#portion").val();
+        var date = $("#date").val();
+        var time = $("#time").val();
+        var result = $("#viewDrugs"+i).load(url2 + "?id=" + id + "&nameProduct=" + name + "&portion=" + portion + "&date=" + date + "&time=" + time,function() {
+          if (result.text() == "Pomyslnie dodano")  {
+              $("#EditDrugs"+i).load(url3 + "?id=" + id + "&i=" + i);
+              //$("#EditDrugs"+i).text("ss");
+              
+              //alert(url2);
+              $("#updateDrugs"+i).html("<input type='button' class='btn btn-success' onclick=edit_drugs('" + url + "'," + id +  "," + i  + ",'" + url2 + "','" + url3 + "',true) value='Edytuj wpis'>");
+          }
+        });
+        //if (result == "Pomyslnie dodano") {
+          //  alert(result);
+        //}
+        //$("#EditDrugs"+i).load(url2 + "?id=" + id);
+    }
     function changePassword(url) {
         var new_password = $("input[name=password_new]").val();
         var new_password2 = $("input[name=password_new2]").val();

@@ -190,6 +190,44 @@ class search
                 }
         
     }
+    
+    public function selectDrugs($dateStart,$dateEnd) {
+        $drugs = new drugs;
+        //$drugs
+        $this->question =  usee::query();
+        $product = $this->question
+                        ->selectRaw("products.name as products")
+                        ->selectRaw("usees.id as id2")
+                        ->selectRaw("usees.id_products as id")
+                        ->join("products","usees.id_products","products.id")
+                        ->where("date",">=",$dateStart)
+                        ->where("date","<=",$dateEnd)
+                        ->where("usees.id_users",Auth::User()->id)
+                        ->groupBy("usees.id_products")
+                ->paginate(10);
+        
+        return $product;
+        //return $product;
+        /*
+        
+        foreach ($product as $list) {
+            //print ("<pre>");
+            $array = $drugs->returnIdProduct($list->id);
+            $hourDrugs = $drugs->sumAverage($list,$dateStart,$dateEnd);
+               $array = array();
+             for ($i=0;$i < count($hourDrugs);$i++) {
+                $array[$i] = $drugs->sumDifferentDay($hourDrugs[$i][1],$hourDrugs[$i][2]);
+                print $array[$i];
+                 
+             }
+            //print($a->products) . "<br>";
+        }
+         
+         
+         * 
+         */
+    }
+    
     public function createQuestions($bool) {
         $drugs = new drugs;
         $this->question =  usee::query();
@@ -236,10 +274,20 @@ class search
         foreach ($list as $list2) {
             
             $day[$i][0] = $list2->dat;
-            $tmp = explode("-",$list2->dat);
-            $day[$i][1] = $tmp[0];
-            $day[$i][2] = $tmp[1];
-            $day[$i][3] = $tmp[2];
+            print $list2->dat;
+            //if ($list2->dat == "") {
+              //  print "dd";
+                //$day[$i][1] = 0;
+                //$day[$i][2] = 0;
+                //$day[$i][3] = 0;
+                
+            //}
+            //else {
+                $tmp = explode("-",$list2->dat);
+                $day[$i][1] = $tmp[0];
+                $day[$i][2] = $tmp[1];
+                $day[$i][3] = $tmp[2];
+            //}
             switch ($list2->type) {
                 case 1: 
                     $day[$i][4] = "Mg";

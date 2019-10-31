@@ -252,6 +252,11 @@
          $("#sum_average"+i).load(url + "?id=" + idDrugs);
         
     }
+    function sum_average2(url,idDrugs,i,date1,date2) {
+        $("#sum_average"+i).toggle();
+         //alert("d");
+         $("#sum_average"+i).load(url + "?id=" + idDrugs + "&date1=" + date1 + "&date2=" + date2 );
+    }
     function calculateBenzo(url,i,equivalent) {
         //var data = $('form#changebenzo'+i).serialize();
         var name = $("select[name=benzo" + i +  "]").val();

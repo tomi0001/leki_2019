@@ -1,1 +1,9 @@
-<div class="ajax_succes">{{$succes}}</div>
+ 
+<script>$("#succes3").ready(function() {
+
+       $("#succes3").hide(5000);
+
+
+    });
+</script>
+<div class="ajax_succes" id="succes3">{{$succes}}</div>

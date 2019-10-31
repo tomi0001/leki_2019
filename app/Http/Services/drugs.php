@@ -425,20 +425,28 @@ class drugs
        $date = $Use->where("id",$id)->first();
        return $date->date;
     }
-    public function sumAverage($arrayId,$date) {
+    public function sumAverage($arrayId,$date,$date2 = "") {
         
        $Use = new usee;
        $start = Auth::User()->start_day;
-
+       $listen = usee::query();
        $id_users = Auth::User()->id;
-       $list = $Use->selectRaw("DATE(IF(HOUR(usees.date) >= '$start', DATE,Date_add(usees.date, INTERVAL - 1 DAY))) as DAT" )
+        $listen->selectRaw("DATE(IF(HOUR(usees.date) >= '$start', DATE,Date_add(usees.date, INTERVAL - 1 DAY))) as DAT" )
                    ->selectRaw("SUM(usees.portion) AS portion")
                    ->selectRaw("usees.date as date")
-                   ->wherein("usees.id_products",$arrayId)
-                   ->where("usees.date","<=",$date)
-                   ->where("usees.id_users",Auth::User()->id)
+                   ->wherein("usees.id_products",$arrayId);
+        if ($date2 == "") {
+                   $listen->where("usees.date","<=",$date);
+        }
+        else {
+            $listen->where("usees.date",">=",$date)
+                    ->where("usees.date","<=",$date2);
+        }
+                   $listen->where("usees.id_users",Auth::User()->id)
                    ->groupBy("DAT")
-                   ->orderBy("DAT","DESC")->get();
+                   ->orderBy("DAT","DESC");
+                
+                $list = $listen->get();
         
 
        $array = array();

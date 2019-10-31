@@ -40,6 +40,7 @@ Route::post("/ajax/addDescriptions","MainDrugsController@addDescriptionsAction")
 Route::get("/ajax/show_description_submit","MainDrugsController@showDescriptionsAction");
 Route::get("/ajax/delete_drugs","MainDrugsController@deleteDrugs");
 Route::get("/ajax/sum_average","MainDrugsController@sumAverage");
+Route::get("/ajax/sum_average2","MainDrugsController@sumAverage2");
 Route::get("/ajax/sum_benzo","MainDrugsController@sumBenzo");
 Route::get("/ajax/changeGroup","EditDrugsController@changeGroup");
 Route::get("/ajax/changeSubstance","EditDrugsController@changeSubstance");
@@ -51,3 +52,4 @@ Route::get("/ajax/closeForm","MainDrugsController@closeForm");
 
 Route::get("/Produkt/Search","SearchController@searchMain");
 Route::get("/Produkt/searchAction","SearchController@searchAction");
+Route::get("/Produkt/selectDrugs","SearchController@selectDrugs");

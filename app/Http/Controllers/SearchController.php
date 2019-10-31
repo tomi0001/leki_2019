@@ -57,6 +57,25 @@ class SearchController {
         
     }
     
+    public function selectDrugs() {
+        if ( (Auth::check()) ) {
+            $search = new Search;
+            $drugs = new drugs;
+            
+            if (Input::get("dateStart") == "" or Input::get("dateEnd") == "") {
+                return Redirect("/Produkt/Search")->with("errorSelect","Musisz uzupełnić daty");
+            }
+            
+            $list = $search->selectDrugs(Input::get("dateStart"),Input::get("dateEnd"));
+            $drugs->selectColor($list);
+            return View("search.selectDrugs")->with("listSearch",$list)
+                    ->with("i",0)
+                    ->with("colorDrugs",$drugs->colorDrugs);
+;
+            //$Drugs->returnIdProduct()
+        }
+    }
+    
     
     
 }

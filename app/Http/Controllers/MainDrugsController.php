@@ -153,6 +153,25 @@ class MainDrugsController
          }
          
      }
+     public function sumAverage2() {
+         $Drugs = new Drugs;
+         $bool = $Drugs->checkDrugs(Auth::User()->id,Input::get("id"));
+         if ($bool == true) {
+             $list = $Drugs->returnIdProduct(Input::get("id"));
+             //$date = $Drugs->returnDateDrugs(Input::get("id"));
+             
+             $hourDrugs = $Drugs->sumAverage($list,Input::get("date1"),Input::get("date2"));
+             
+             $array = array();
+             for ($i=0;$i < count($hourDrugs);$i++) {
+                $array[$i] = $Drugs->sumDifferentDay($hourDrugs[$i][1],$hourDrugs[$i][2]);
+                 
+             }
+             return View("ajax.sum_average")->with("arrayDay",$array)->with("hourDrugs",$hourDrugs);
+              
+              
+         }
+     }
      public function showDescriptionsAction() {
          $Drugs = new Drugs;
          $Drugs->description = $Drugs->selectDescription(Input::get("id"));

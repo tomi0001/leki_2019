@@ -163,6 +163,36 @@
             
         </tr>
         </form>
+         <form method='get' action='{{ url('/Produkt/selectDrugs')}}'>
+        <TR>
+            <td rowspan="2">
+                <br>
+                Wybierz leki z tych dat
+            </td>
+            <td>
+                <input type="date" name="dateStart" class='form-control'>
+            </td>
+        </TR>
+        <TR>
+            
+            <td>
+                <input type="date" name="dateEnd" class='form-control'>
+            </td>
+        </TR>
+        <tr>
+            <td colspan="2"  class="center">
+                <input type='submit' value='Szukaj' class='btn btn-success'>
+            </td>
+        </tr>
+        <tr>
+            <td colspan='2' class='center'>
+                 
+                @if (session('errorSelect') )
+                <span class='error'>{{session('errorSelect')}}</span>
+                @endif
+            </td>
+        </tr>
+         </form>
     </table>
            
        

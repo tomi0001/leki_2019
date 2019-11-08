@@ -34,6 +34,7 @@ class drugs
     public $colorDrugs = array();
     public $listSum = array();
     public $description = array();
+    public $ifAlcohol = false;
     public function addGroup() :bool {
         if ($this->checkGroupName(Input::get("name"),Auth::User()->id) == "" ) {
             $Group = new Group;
@@ -425,15 +426,26 @@ class drugs
        $date = $Use->where("id",$id)->first();
        return $date->date;
     }
-    public function sumAverage($arrayId,$date,$date2 = "") {
+    public function sumAverage($arrayId,$date,$ifAlcohol,$date2 = "") {
         
        $Use = new usee;
        $start = Auth::User()->start_day;
        $listen = usee::query();
        $id_users = Auth::User()->id;
-        $listen->selectRaw("DATE(IF(HOUR(usees.date) >= '$start', DATE,Date_add(usees.date, INTERVAL - 1 DAY))) as DAT" )
-                   ->selectRaw("SUM(usees.portion) AS portion")
-                   ->selectRaw("usees.date as date")
+       //if ($ifAlcohol == true) {
+              
+                    $listen->join("products","products.id","usees.id_products");
+        //}
+        $listen->selectRaw("DATE(IF(HOUR(usees.date) >= '$start', DATE,Date_add(usees.date, INTERVAL - 1 DAY))) as DAT" );
+        $listen->selectRaw("products.type_of_portion as type" );
+                if ($ifAlcohol == true) {
+              
+                    $listen->selectRaw("round(SUM((usees.portion * products.how_percent / 100)),2) AS portion");
+                }
+                else {
+                   $listen->selectRaw("SUM(usees.portion) AS portion");
+                }
+                   $listen->selectRaw("usees.date as date")
                    ->wherein("usees.id_products",$arrayId);
         if ($date2 == "") {
                    $listen->where("usees.date","<=",$date);
@@ -456,14 +468,24 @@ class drugs
         $j = 0;
         $z = 0;
         $i = 0;
+        $type = "";
         foreach ($list as $rekord2) {
+            switch ($rekord2->type) {
+                case '3': $type = " ilości";
+                    break;
+                case '2': $type = " mililitry";
+                    break;
+                default: $type = " mg";
+                    break;
+            
+            }
             $data1[$i] = explode(" ",$rekord2->date);
             $dose[$i] = $rekord2->portion;
             $data = explode("-",$data1[$i][0]);
             $data2 = explode(":",$data1[$i][1]);
             $time[$i] = mktime($data2[0],$data2[1],$data2[2],$data[1],$data[2],$data[0]);
             if ($i == 0) {
-                $array[$j][0] = $dose[$i];
+                $array[$j][0] = $dose[$i] . $type;
                 $array[$j][1] = $data1[$i][0];
                 $array[$j][2] = $data1[$i][0];
                 $array[$j][3] = 0;
@@ -473,7 +495,7 @@ class drugs
                 $array[$j][2] = $data1[$i-1][0];   
                 $array[$j][3] = 1;
                 $j++;               
-                $array[$j][0] = $dose[$i];
+                $array[$j][0] = $dose[$i] . $type;
                 $array[$j][1] = $data1[$i][0];
                 $array[$j][2] = $data1[$i][0];
                 $array[$j][3] = 0;
@@ -483,7 +505,7 @@ class drugs
             elseif ($i != 0 and $dose[$i] != $dose[$i-1]) {
                 $array[$j][2] = $data1[$i-1][0];
                 $j++;
-                $array[$j][0] = $dose[$i];
+                $array[$j][0] = $dose[$i] . $type;
                 $array[$j][1] = $data1[$i][0];
                 $array[$j][2] = $data1[$i][0];
                 $array[$j][3] = 0;
@@ -491,7 +513,7 @@ class drugs
                 
             }
             elseif ($i == count($list)-1) {
-                $array[$j][0] = $dose[$i];
+                $array[$j][0] = $dose[$i] . $type;
                 $array[$j][2] = $data1[$i][0];
                 
                 $array[$j][3] = 0;
@@ -522,17 +544,22 @@ class drugs
         $forwarding_substances = new Forwarding_substance;
         $listIdSub = array();
         $selectIdProduct = $Use->where("id",$id)->first();
-        $selectIdSub = $forwarding_substances
+        $selectIdSub = $forwarding_substances->join("products","products.id","forwarding_substances.id_products")
                 ->where("id_products",$selectIdProduct->id_products)->get();
         $i = 0;
         foreach ($selectIdSub as $selectIdSub2) {
                $listIdSub[$i] = $selectIdSub2->id_substances;
+               //print "d";
+               if ($selectIdSub2->type_of_portion == 2) {
+                   
+                   $this->ifAlcohol = true;
+               }
                $i++; 
         }
          $selectIdSub3 = $forwarding_substances
                             ->orwherein("id_substances",$listIdSub)
                             ->groupBy("id_products")
-                            ->havingRaw("count(*) = 0")
+                            ->havingRaw("count(*) = $i")
                             ->get();
          $array = array();
          $i = 0;

@@ -143,7 +143,7 @@ class MainDrugsController
          if ($bool == true) {
              $list = $Drugs->returnIdProduct(Input::get("id"));
              $date = $Drugs->returnDateDrugs(Input::get("id"));
-             $hourDrugs = $Drugs->sumAverage($list,$date);
+             $hourDrugs = $Drugs->sumAverage($list,$date,$Drugs->ifAlcohol);
              $array = array();
              for ($i=0;$i < count($hourDrugs);$i++) {
                 $array[$i] = $Drugs->sumDifferentDay($hourDrugs[$i][1],$hourDrugs[$i][2]);
@@ -160,7 +160,7 @@ class MainDrugsController
              $list = $Drugs->returnIdProduct(Input::get("id"));
              //$date = $Drugs->returnDateDrugs(Input::get("id"));
              
-             $hourDrugs = $Drugs->sumAverage($list,Input::get("date1"),Input::get("date2"));
+             $hourDrugs = $Drugs->sumAverage($list,Input::get("date1"),$Drugs->ifAlcohol,Input::get("date2"));
              
              $array = array();
              for ($i=0;$i < count($hourDrugs);$i++) {

@@ -26,7 +26,7 @@ class UserController
         $User = new User2;
         $User->CheckFormRegister();
         if (count($User->error) != 0) {
-            return Redirect("/User/Register")->with("error",$controllerUser->error)
+            return Redirect("/User/Register")->with("error",$User->error)
                     ->withInput();
         }
         else {

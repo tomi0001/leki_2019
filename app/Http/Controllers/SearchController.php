@@ -27,9 +27,10 @@ class SearchController {
             $search = new Search;
             $drugs = new drugs;
             $bool = $search->find();
+            //$search->findNot();
             $error = "";
-            if ($bool == false) {
-                $list = $search->createQuestions($bool);
+            if ($search->bool == false) {
+                $list = $search->createQuestions($search->bool);
                 if (count($list) == 0) {
                     $error = "Nic nie wyszukano";
                 }
@@ -39,16 +40,17 @@ class SearchController {
                         ->with("day",$day)->with("inDay",Input::get("day"))
                         ->with("colorDrugs",$drugs->colorDrugs)->with("error",$error);
             }
-            else if ($bool == true and $search->checkArrayFind() == false) {
+            else if ($search->bool == true and $search->checkArrayFind() == false ) {
                 return back()->with("error","Nic nie wyszukano")->withinput();
             }
-            else if ( $bool == true) {
-                $list = $search->createQuestions($bool);
+            else if ( $search->bool == true ) {
+                $list = $search->createQuestions($search->bool);
                 if (count($list) == 0) {
                     $error = "Nic nie wyszukano";
                 }
                 $day = $search->changeArray($list);
                 $drugs->selectColor($list);
+                var_dump($search->id_product);
                 return View("search.searchAction")->with("listSearch",$list)->with("i",0)
                         ->with("day",$day)->with("inDay",Input::get("day"))
                         ->with("colorDrugs",$drugs->colorDrugs)->with("error",$error);

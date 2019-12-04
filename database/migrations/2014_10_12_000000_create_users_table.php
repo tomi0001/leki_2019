@@ -30,6 +30,17 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
+        Schema::create("hashes",function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->increments('id')->unsigned();
+            $table->integer("id_users")->unsigned();
+            $table->foreign("id_users")->references("id")->on("users");
+            $table->boolean("if_true")->nullable();
+            $table->char("hash",10)->nullable();
+            $table->timestamps();
+
+            
+        });
         Schema::create('groups', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->string('name');

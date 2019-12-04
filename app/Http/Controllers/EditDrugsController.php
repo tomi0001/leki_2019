@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Input as Input;
 use Illuminate\Support\Facades\Password as Password;
 use Auth;
 use App\Http\Services\drugs as Drugs;
+use App\Http\Services\hashs as Hashs;
 use Hash;
 use DB;
 class EditDrugsController
@@ -22,13 +23,19 @@ class EditDrugsController
     public function EditDrugs() {
         if ( (Auth::check()) ) {
             $drugs = new Drugs;
+            $hash = new Hashs;
             $listGroups = $drugs->selectGroup(Auth::User()->id);
             $listSubstance = $drugs->selectSubstance(Auth::User()->id);
             $listProduct = $drugs->selectProduct(Auth::User()->id);
+            $selectHash = $hash->selectHash(Auth::User()->id);
+            if (!isset($selectHash) ) {
+                $selectHash = null;
+            }
             return View("Drugs.EditDrugs")->with("listGroups",$listGroups)
                     ->with("start_day",Auth::User()->start_day)
                     ->with("listSubstance",$listSubstance)
-                    ->with("listProduct",$listProduct);
+                    ->with("listProduct",$listProduct)
+                    ->with("hash",$selectHash);
         }
         
     }

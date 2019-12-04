@@ -544,7 +544,7 @@ span.error {
 
  
 body {
-    background-image: url('../tlo.png'); /* from http://subtlepatterns.com */
+    background-image: url('./tlo.png'); /* from http://subtlepatterns.com */
     
     
     

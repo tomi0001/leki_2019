@@ -22,49 +22,161 @@ use Auth;
 
 class search
 {   
-    public $arrayFindPro = [0,0];
-    public $arrayFindSub = [0,0];
-    public $arrayFindGro = [0,0];
+    public $arrayFindPro = [0,0,0];
+    public $arrayFindSub = [0,0,0];
+    public $arrayFindGro = [0,0,0];
     public $type;
-    public $string;
+    public $stringPro = [];
+    public $stringSub = [];
+    public $stringGro = [];
     private $sort = "date";
+    private $string2 = [];
+    private $string3 = [];
     public $id_product =array();
     public $question;
+    public $bool = false;
     public function checkField() {
 
         
     }
-    public function find() {
+    
+    private function divSearchString($string,$type) {
+        $array = [];
+        if (strstr($string,",")) {
+            $array = explode(",",$string);
+            for ($i=0;$i < count($array);$i++) {
+                switch ($type) {
+                    case "products":
+                        array_push($this->stringPro, $array[$i]);
+                        break;
+                    case "substances":
+                        array_push($this->stringSub, $array[$i]);
+                        break;
+                    case "group":
+                        array_push($this->stringGro, $array[$i]);
+                        break;
+                }
+            }
+        }
+        else {
+            switch ($type) {
+                case "products":
+                    array_push($this->stringPro, $string);
+                    break;
+                case "substances":
+                     array_push($this->stringSub, $string);
+                    break;
+                case "group": 
+                    array_push($this->stringGro, $string);
+                    break;
+            }
+        }
+    }
+    /*
+    public function findNot() {
         $array = array();
-        $bool = false;
-        if (Input::get("product") != "") {
-            $this->arrayFindPro = $this->findString(Input::get("product"),"products");
+        //$bool = false;
+        
+        if (Input::get("productNot") != "") {
+            $this->divSearchString(Input::get("productNot"),"products");
+            for ($i=0;$i < count($this->stringPro);$i++) {
+                $this->arrayFindPro[$i] = $this->findString($this->stringPro[$i],"products");
+            }
             $this->type = "products";
             if (count($this->arrayFindPro) != 0) {
-                $this->string = $this->arrayFindPro[0][1];
+                for ($i=0;$i < count($this->stringPro);$i++) {
+                    $this->string2[$i] = $this->arrayFindPro[$i][0][1];
+                }
             }
             $this->selectIdProduct();
-            $bool = true;
+            $this->bool = true;
         }
-        if (Input::get("substances") != "") {
-            $this->arrayFindSub = $this->findString(Input::get("substances"),"substances");
+        
+        if (Input::get("substancesNot") != "") {
+            //print "dos";
+            $this->divSearchString(Input::get("substancesNot"),"substances");
+                        for ($i=0;$i < count($this->stringSub);$i++) {
+
+                                $this->arrayFindSub[$i] = $this->findString($this->stringSub[$i],"substances");
+                        }
             $this->type = "substances";
             if (count($this->arrayFindSub) != 0) {
-                $this->string = $this->arrayFindSub[0][1];
+                for ($i=0;$i < count($this->stringSub);$i++) {
+                    $this->string2[$i] = $this->arrayFindSub[$i][0][1];
+                }
             }
-            $this->selectIdSubstances();
-            $bool = true;
+            $this->selectIdSubstances(true);
+            $this->bool = true;
         }
-        if (Input::get("group") != "") {
-            $this->arrayFindGro = $this->findString(Input::get("group"),"groups");
+        if (Input::get("groupNot") != "") {
+            //print "dd";
+            $this->divSearchString(Input::get("groupNot"),"group");
+            for ($i=0;$i < count($this->stringGro);$i++) {
+                $this->arrayFindGro[$i] = $this->findString($this->stringGro[$i],"groups");
+            }
             $this->type = "groups";
             if (count($this->arrayFindGro) != 0) {
-                $this->string = $this->arrayFindGro[0][1];
+                for ($i=0;$i < count($this->stringGro);$i++) {
+                    $this->string3[$i] = $this->arrayFindGro[$i][0][1];
+                }
+            }
+            $this->selectIdGroups(true);
+            $this->bool = true;
+        }
+        //return $bool;
+    }
+     * 
+     */
+    public function find() {
+        $array = array();
+        //$bool = false;
+        
+        if (Input::get("product") != "") {
+            $this->divSearchString(Input::get("product"),"products");
+            for ($i=0;$i < count($this->stringPro);$i++) {
+                $this->arrayFindPro[$i] = $this->findString($this->stringPro[$i],"products");
+            }
+            $this->type = "products";
+            if (count($this->arrayFindPro) != 0) {
+                for ($i=0;$i < count($this->stringPro);$i++) {
+                    $this->string2[$i] = $this->arrayFindPro[$i][0][1];
+                }
+            }
+            $this->selectIdProduct();
+            $this->bool = true;
+        }
+        
+        if (Input::get("substances") != "") {
+            $this->divSearchString(Input::get("substances"),"substances");
+                        for ($i=0;$i < count($this->stringSub);$i++) {
+
+                                $this->arrayFindSub[$i] = $this->findString($this->stringSub[$i],"substances");
+                        }
+            $this->type = "substances";
+            if (count($this->arrayFindSub) != 0) {
+                for ($i=0;$i < count($this->stringSub);$i++) {
+                    $this->string2[$i] = $this->arrayFindSub[$i][0][1];
+                }
+            }
+            $this->selectIdSubstances();
+            $this->bool = true;
+        }
+        if (Input::get("group") != "") {
+            $this->divSearchString(Input::get("group"),"group");
+            for ($i=0;$i < count($this->stringGro);$i++) {
+                $this->arrayFindGro[$i] = $this->findString($this->stringGro[$i],"groups");
+            }
+            $this->type = "groups";
+            if (count($this->arrayFindGro) != 0) {
+                for ($i=0;$i < count($this->stringGro);$i++) {
+                    $this->string2[$i] = $this->arrayFindGro[$i][0][1];
+                }
             }
             $this->selectIdGroups();
-            $bool = true;
+            $this->bool = true;
         }
-        return $bool;
+        //$this-findNot();
+        //return $bool;
     }
     
     public function checkArrayFind() {
@@ -79,18 +191,28 @@ class search
      
     public function selectIdProduct() {
         $product = new product;
-        $id = $product->where("name",$this->string)->first();
+        $id = $product->whereIn("name",$this->string2)->get();
         if (isset($id) ) {
-            array_push($this->id_product, $id->id);
+            foreach ($id as $id2) {
+                array_push($this->id_product, $id2->id);
+            }
         }
         
     }
-    public function selectIdSubstances() {
-        $substance = new substances;
-        $id = $substance->selectRaw("products.id as id")
+    public function selectIdSubstances($not = false) {
+        $substance = substances::query();
+       $substance->selectRaw("products.id as id")
                 ->join("forwarding_substances","forwarding_substances.id_substances","substances.id")
-                ->join("products","products.id","forwarding_substances.id_products")
-                ->where("substances.name",$this->string)->get();
+                ->join("products","products.id","forwarding_substances.id_products");
+                if ($not == false) {
+                    $substance->whereIn("substances.name",$this->string2);
+                }
+                else {
+                    $substance->whereNotIn("substances.name",$this->string3);
+                }
+                //->whereIn("substances.name",$this->string2)->get();
+       
+        $id = $substance->get();
         $i = 0;
         foreach ($id as $id_product) {
             array_push($this->id_product,$id_product->id);
@@ -98,15 +220,22 @@ class search
         }
         
     }
-    public function selectIdGroups() {
-        $group = new group;
-        $id = $group->selectRaw("products.id as id")
+    public function selectIdGroups($not = false) {
+        //$group = new group;
+        $group = group::query();
+         $group->selectRaw("products.id as id")
                 ->selectRaw("products.name as name")
                 ->join("forwarding_groups","groups.id","forwarding_groups.id_groups")
                 ->join("substances","substances.id","forwarding_groups.id_substances")
                 ->join("forwarding_substances","substances.id","forwarding_substances.id_substances")
-                ->join("products","products.id","forwarding_substances.id_products")
-                ->where("groups.name",$this->string)->get();
+                ->join("products","products.id","forwarding_substances.id_products");
+                if ($not == false) {
+                    $group->whereIn("groups.name",$this->string2);
+                }
+                else {
+                    $group->whereNotIn("groups.name",$this->string3);
+                }
+               $id =  $group->get();
         $i = 0;
         foreach ($id as $id_product) {
             array_push($this->id_product,$id_product->id);
@@ -274,7 +403,7 @@ class search
         foreach ($list as $list2) {
             
             $day[$i][0] = $list2->dat;
-            print $list2->dat;
+            //print $list2->dat;
             //if ($list2->dat == "") {
               //  print "dd";
                 //$day[$i][1] = 0;
@@ -283,10 +412,17 @@ class search
                 
             //}
             //else {
+            if (strstr($list2->dat,"-") ) {
                 $tmp = explode("-",$list2->dat);
                 $day[$i][1] = $tmp[0];
                 $day[$i][2] = $tmp[1];
                 $day[$i][3] = $tmp[2];
+            }
+            else {
+                $day[$i][1] = "";
+                $day[$i][2] = "";
+                $day[$i][3] = "";
+            }
             //}
             switch ($list2->type) {
                 case 1: 
@@ -339,6 +475,9 @@ class search
             else if (isset($text1[$i]) and isset($text2[$i]) and  $text1[$i] == $text2[$i]) $correct++;
         }
         $result = ($how1 + $how2) / 2;
+        if ($result == 0) {
+            $result = 1;
+        }
         return $correct / $result;
       }
     

@@ -192,6 +192,9 @@
         
          <div  class="sum_average" id='sum_average{{$i}}' style="overflow-y: scroll;  height:300;"></div>
     </div>
+    @if ($separate[$i]["bool"] == true)
+        <br><br><br>
+    @endif
     
         @php
             $i++;

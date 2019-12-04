@@ -426,6 +426,23 @@ class drugs
        $date = $Use->where("id",$id)->first();
        return $date->date;
     }
+    
+    public function separateDrugs() {
+        $array = [];
+        $i = 0;
+        foreach ($this->list as $list) {
+            $array[$i]["second"] = strtotime($list->date);
+            $array[$i]["bool"] = false;
+            if ($i != 0 and $array[$i-1]["second"] < $array[$i]["second"] - 140) {
+                $array[$i-1]["bool"] = true;
+                
+            }
+          
+            $i++;
+        }
+        return $array;
+    }
+    
     public function sumAverage($arrayId,$date,$ifAlcohol,$date2 = "") {
         
        $Use = new usee;

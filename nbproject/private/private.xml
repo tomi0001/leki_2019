@@ -2,46 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/var/www/html/leki_2019/resources/views/Main/main.blade.php</file>
-            <file>file:/var/www/html/leki_2019/app/Http/Controllers/MainController.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/search/selectDrugs.blade.php</file>
-            <file>file:/var/www/html/leki_2019/config/session.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/Drugs/Add.blade.php</file>
-            <file>file:/var/www/html/leki_2019/config/view.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/ajax/show_description.blade.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/Main/showDrugs.blade.php</file>
-            <file>file:/var/www/html/leki_2019/app/Http/Controllers/AddDrugsController.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/Main/addDrugs.blade.php</file>
-            <file>file:/var/www/html/leki_2019/app/Http/Controllers/SearchController.php</file>
-            <file>file:/var/www/html/leki_2019/app/Http/Services/calendar.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/search/searchAction.blade.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/ajax/sum_average.blade.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/search/Main.blade.php</file>
-            <file>file:/var/www/html/leki_2019/app/Http/Services/User.php</file>
-            <file>file:/var/www/html/leki_2019/config/database.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/Main/showSumDrugs.blade.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/User/Register.blade.php</file>
-            <file>file:/var/www/html/leki_2019/app/Http/Controllers/EditDrugsController.php</file>
-            <file>file:/var/www/html/leki_2019/app/Http/Services/drugs.php</file>
-            <file>file:/var/www/html/leki_2019/config/cache.php</file>
-            <file>file:/var/www/html/leki_2019/config/queue.php</file>
-            <file>file:/var/www/html/leki_2019/app/Http/Services/search.php</file>
-            <file>file:/var/www/html/leki_2019/config/app.php</file>
-            <file>file:/var/www/html/leki_2019/config/services.php</file>
-            <file>file:/var/www/html/leki_2019/public/js/app.js</file>
-            <file>file:/var/www/html/leki_2019/resources/views/ajax/succes.blade.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/search/mainSearch.blade.php</file>
-            <file>file:/var/www/html/leki_2019/app/Http/Controllers/UserController.php</file>
-            <file>file:/var/www/html/leki_2019/.env</file>
-            <file>file:/var/www/html/leki_2019/routes/web.php</file>
-            <file>file:/var/www/html/leki_2019/config/auth.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/Layout/kalendar.blade.php</file>
-            <file>file:/var/www/html/leki_2019/config/broadcasting.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/Layout/pageUser.blade.php</file>
-            <file>file:/var/www/html/leki_2019/app/Http/Controllers/MainDrugsController.php</file>
-            <file>file:/var/www/html/leki_2019/config/filesystems.php</file>
-            <file>file:/var/www/html/leki_2019/resources/views/Layout/pageMain.blade.php</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

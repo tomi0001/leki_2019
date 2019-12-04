@@ -113,6 +113,83 @@
     <div class="title0">
 
             
+            WYGENERUJ HASH
+           
+    </div>
+     <form method="get" id='Hash'>
+                <table class="table center">
+                    <tr>
+                        <td>
+                            Czy można się logować za pomocą tego hasha
+                        </td>
+                       
+                    
+                    
+                    
+
+                        <td  class="center">
+                            <select name="if_true" class="form-control form-control-lg" onChange="EditProduct('{{url('/Produkt/editProduct')}}')">
+                                @if ($hash != null)
+                                    @if ($hash->if_true == true)
+                                    <option value=1 selected>Tak</option>
+                                    <option value=0>Nie</option>
+                                    @endif
+                                    @if ($hash->if_true == false)
+                                    <option value=0 selected>Nie</option>
+                                    <option value=1>Tak</option>
+                                    @endif
+                                
+                                @else
+                                   <option value=0 selected>Nie</option>
+                                    
+                                    <option value=1>Tak</option>
+                                @endif
+                                                         </select>
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <td>
+                            Hash
+                        </td>
+                       
+                    
+                    
+                    
+
+                        <td  class="center">
+                            @if ($hash != null)
+                                <input type="text" name="hash" id="hash" value="{{$hash->hash}}" class="form-control">
+                            @else
+                                <input type="text" name="hash" id="hash"  class="form-control">
+                            @endif
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <td  class="center" colspan="2">
+                            <input type="button" onclick="generateHash()" class="btn btn-primary" value="Wygeneruj Hash">
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <td  class="center" colspan="2">
+                            <input type="button" onclick="updateHash('{{url('/ajax/updateHash')}}')" class="btn btn-success" value="Zapisz zmiany">
+                        </td>
+                        
+                    </tr>
+                </table>
+                <div id="ajax_hash" class='ajax'>
+                    
+                </div>
+                
+                
+      </form>
+</div>
+<div id="add_drugs">
+    <div class="title0">
+
+            
             EDYTUJ SWOJE USTAWIENIA
            
     </div>

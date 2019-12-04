@@ -35,7 +35,7 @@ class MainController
             $Drugs->selectDrugs(Auth::User()->id,$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day);
             $Drugs->showSumDrugs(Auth::User()->id,$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day);
             $sumAlkohol = $Drugs->sumPercentAlkohol();
-           
+            $separate = $Drugs->separateDrugs();
             $Drugs->processPrice($Drugs->list);
             $equivalent = $Drugs->sumEquivalent($Drugs->list);
             $allEquivalent = $Drugs->sumAllEquivalent($equivalent);
@@ -70,6 +70,7 @@ class MainController
                     ->with("allEquivalent",$allEquivalent)
                     ->with("benzo",$benzo)
                     ->with("colorDrugs",$Drugs->colorDrugs)
+                    ->with("separate",$separate)
                     ->with("date",$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day . "?");
            
         }

@@ -49,6 +49,8 @@ Route::get("/ajax/edit_drugs","MainDrugsController@editRegistration");
 Route::get("/ajax/update_drugs","MainDrugsController@updateRegistration");
 Route::get("/ajax/show_update_drugs","MainDrugsController@updateShowRegistration");
 Route::get("/ajax/closeForm","MainDrugsController@closeForm");
+Route::get("/ajax/updateHash","HashController@updateHash");
+
 
 Route::get("/Produkt/Search","SearchController@searchMain");
 Route::get("/Produkt/searchAction","SearchController@searchAction");

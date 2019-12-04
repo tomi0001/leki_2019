@@ -7,7 +7,7 @@
         <form method='get' action='{{ url('/Produkt/searchAction')}}'>
         <tr>
             <td width="40%">
-                Nazwa produktu
+                Nazwy produktów
             </td>
             <td>
                 <input type='text' name='product' class='form-control' value="{{Input::old('product')}}">
@@ -15,7 +15,7 @@
         </tr>
         <tr>
             <td>
-                Nazwa substancji
+                Nazwy substancji
             </td>
             <td>
                 <input type='text' name='substances' class='form-control'  value="{{Input::old('substances')}}">
@@ -23,12 +23,13 @@
         </tr>
         <tr>
             <td>
-                Nazwa grupy
+                Nazwy grup
             </td>
             <td>
                 <input type='text' name='group' class='form-control'  value="{{Input::old('group')}}">
             </td>
         </tr>
+        
         <tr>
             <td>
                 Fraza

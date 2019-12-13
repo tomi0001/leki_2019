@@ -65,10 +65,10 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->integer('id_users')->unsigned();
             $table->foreign("id_users")->references("id")->on("users");
-            $table->float("how_percent");
+            $table->float("how_percent")->nullable();
             $table->integer("type_of_portion")->unsigned();
-            $table->float("price");
-            $table->integer("how_much")->unsigned();
+            $table->float("price")->nullable();
+            $table->integer("how_much")->unsigned()->nullable();
             $table->timestamps();
         });
         Schema::create('usees', function (Blueprint $table) {

@@ -2,6 +2,22 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/var/www/html/leki_2019/database/migrations/2014_10_12_000000_create_users_table.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/MainController.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Services/drugs.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/HashController.php</file>
+            <file>file:/var/www/html/leki_2019/resources/views/User/Login.blade.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/UserController.php</file>
+            <file>file:/var/www/html/leki_2019/resources/views/search/mainSearch.blade.php</file>
+            <file>file:/var/www/html/leki_2019/.env</file>
+            <file>file:/var/www/html/leki_2019/routes/web.php</file>
+            <file>file:/var/www/html/leki_2019/resources/views/Drugs/EditDrugs.blade.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/SearchController.php</file>
+            <file>file:/var/www/html/leki_2019/config/auth.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/CookieController.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Services/hashs.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/MainDrugsController.php</file>
+        </group>
     </open-files>
 </project-private>

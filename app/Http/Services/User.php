@@ -8,13 +8,14 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-
+use App\Http\Services\hashs as Hashs;
 use Illuminate\Support\Facades\Input as Input;
 use Auth;
 
 use Illuminate\Support\Facades\Password as Password;
 use Hash;
 use DB;
+use Cookie;
 use App\User as Users;
 class User
 {
@@ -112,6 +113,12 @@ class User
         
     }
 
-    
+    public function updateHash() {
+        $Hash = new Hashs;
+        $data = $Hash->selectData2();
+        Cookie::queue(Cookie::make('id', $data[0], 60));
+        Cookie::queue(Cookie::make('hash', $data[1], 60));
+        Cookie::queue(Cookie::make('start', $data[2], 60));
+    }
 
 }

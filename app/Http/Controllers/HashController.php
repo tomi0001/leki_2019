@@ -18,7 +18,13 @@ use DB;
 class HashController {
     public function updateHash() {
         $hashs = new Hashs;
-        $hashs->updateHash(Auth::User()->id);
+        $arrayHash = $hashs->checkHash(Auth::User()->id);
+        if ($arrayHash == 0) {
+            $hashs->createHash(Auth::User()->id);
+        }
+        else {
+            $hashs->updateHash(Auth::User()->id);
+        }
         return View("ajax.succes")->with("succes","Hash zmieniony pomyślnie");
         
     }

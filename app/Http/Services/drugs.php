@@ -359,7 +359,7 @@ class drugs
 
         
     }
-    public function selectDescription($id) {
+    public function selectDescription($id,$idUsers) {
          
          
         $Description = new Forwarding_description;
@@ -368,7 +368,7 @@ class drugs
                 ->selectRaw("descriptions.description as description")
                 ->selectRaw("descriptions.date as date")
                 ->where("forwarding_descriptions.id_usees",$id)
-                ->where("descriptions.id_users",Auth::User()->id)->get();
+                ->where("descriptions.id_users",$idUsers)->get();
        
         return $list;
            
@@ -443,12 +443,12 @@ class drugs
         return $array;
     }
     
-    public function sumAverage($arrayId,$date,$ifAlcohol,$date2 = "") {
+    public function sumAverage($arrayId,$date,$ifAlcohol,$id,$startDay,$date2 = "") {
         
        $Use = new usee;
-       $start = Auth::User()->start_day;
+       $start = $startDay;
        $listen = usee::query();
-       $id_users = Auth::User()->id;
+       $id_users = $id;
        //if ($ifAlcohol == true) {
               
                     $listen->join("products","products.id","usees.id_products");
@@ -471,7 +471,7 @@ class drugs
             $listen->where("usees.date",">=",$date)
                     ->where("usees.date","<=",$date2);
         }
-                   $listen->where("usees.id_users",Auth::User()->id)
+                   $listen->where("usees.id_users",$id_users)
                    ->groupBy("DAT")
                    ->orderBy("DAT","DESC");
                 
@@ -756,12 +756,12 @@ class drugs
         }
         return $zl . $gr;
     }
-    public function selectDrugsMonth($year,$month) {
+    public function selectDrugsMonth($year,$month,$id) {
         $calendar = new calendar;
         $howmonth = $calendar->check_month($month,$year);
         for ($i = 0;$i < $howmonth;$i++) {
             $j = $i + 1;
-            $this->selectDrugs(Auth::User()->id,$year . "-" . $month . "-" . $j);
+            $this->selectDrugs($id,$year . "-" . $month . "-" . $j);
             $this->dayMonth[$i] = $this->selectColorforday($this->list);
             
         }
@@ -853,9 +853,9 @@ class drugs
         return $list;
     }
 
-    public function selectBenzo() {
+    public function selectBenzo($id) {
         $substances = new Substances;
-        $list = $substances->where("id_users",Auth::User()->id)
+        $list = $substances->where("id_users",$id)
                            ->where("equivalent","!=",0)
                            ->where("equivalent","!=",null)->get();
         return $list;

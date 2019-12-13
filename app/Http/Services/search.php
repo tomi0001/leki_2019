@@ -127,14 +127,14 @@ class search
     }
      * 
      */
-    public function find() {
+    public function find($id) {
         $array = array();
         //$bool = false;
         
         if (Input::get("product") != "") {
             $this->divSearchString(Input::get("product"),"products");
             for ($i=0;$i < count($this->stringPro);$i++) {
-                $this->arrayFindPro[$i] = $this->findString($this->stringPro[$i],"products");
+                $this->arrayFindPro[$i] = $this->findString($this->stringPro[$i],"products",$id);
             }
             $this->type = "products";
             if (count($this->arrayFindPro) != 0) {
@@ -320,7 +320,7 @@ class search
         
     }
     
-    public function selectDrugs($dateStart,$dateEnd) {
+    public function selectDrugs($dateStart,$dateEnd,$id) {
         $drugs = new drugs;
         //$drugs
         $this->question =  usee::query();
@@ -331,7 +331,7 @@ class search
                         ->join("products","usees.id_products","products.id")
                         ->where("date",">=",$dateStart)
                         ->where("date","<=",$dateEnd)
-                        ->where("usees.id_users",Auth::User()->id)
+                        ->where("usees.id_users",$id)
                         ->groupBy("usees.id_products")
                 ->paginate(10);
         
@@ -357,10 +357,10 @@ class search
          */
     }
     
-    public function createQuestions($bool) {
+    public function createQuestions($bool,$id) {
         $drugs = new drugs;
         $this->question =  usee::query();
-        $hour = $this->selectHourStart(Auth::User()->id);
+        $hour = $this->selectHourStart($id);
         $search = $drugs->charset_utf_fix2(Input::get("search"));
         $this->question
                 ->select( DB::Raw("(DATE(IF(HOUR(usees.date) >= '$hour', usees.date,Date_add(usees.date, INTERVAL - 1 DAY) )) ) as dat  "))   
@@ -382,7 +382,7 @@ class search
                 ->leftjoin("forwarding_descriptions","usees.id","forwarding_descriptions.id_usees")
                 ->leftjoin("descriptions","descriptions.id","forwarding_descriptions.id_descriptions")
                 ->leftjoin("products","products.id","usees.id_products")
-                ->where("usees.id_users",Auth::User()->id);
+                ->where("usees.id_users",$id);
 
         $this->setWhere($bool,$search);
         $this->setGroup($hour);
@@ -440,9 +440,9 @@ class search
         return $day;
     }
     
-    private function findString($search,$table) {
+    private function findString($search,$table,$id) {
         $array = array();
-        $find = DB::table($table)->where("id_users",Auth::User()->id)->get();
+        $find = DB::table($table)->where("id_users",$id)->get();
         $i = 0;
         foreach ($find as $find2) {
              $find3 = DB::table($table)->get();

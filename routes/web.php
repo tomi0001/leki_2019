@@ -19,15 +19,22 @@ Route::post('/User/Login_action', "UserController@loginAction");
 Route::get('/User/Logout', "UserController@logout");
 Route::get("User/changePassword","UserController@changePassword");
 
+Route::post('/User/Login_action_dr', "UserDrController@loginAction");
+Route::get('/UserDr/Logout', "UserDrController@logout");
 
 
 Route::get("/Main/{year?}/{month?}/{day?}/{next?}","MainController@Main");
+
+Route::get("/MainDr/{year?}/{month?}/{day?}/{next?}","MainDrController@Main");
 
 Route::get("/Produkt/Add","AddDrugsController@AddDrugs");
 Route::get("/Produkt/Edit","EditDrugsController@EditDrugs");
 Route::get("/Produkt/editGroup","EditDrugsController@EditGroup");
 Route::get("/Produkt/editSubstance","EditDrugsController@EditSubstance");
 Route::get("/Produkt/editProduct","EditDrugsController@EditProduct");
+
+
+
 
 Route::get("/ajax/addGroup","AddDrugsController@addGroupAction");
 Route::get("/ajax/addSubstances","AddDrugsController@addSubstancesAction");
@@ -55,3 +62,7 @@ Route::get("/ajax/updateHash","HashController@updateHash");
 Route::get("/Produkt/Search","SearchController@searchMain");
 Route::get("/Produkt/searchAction","SearchController@searchAction");
 Route::get("/Produkt/selectDrugs","SearchController@selectDrugs");
+
+Route::get("/ProduktDr/Search","SearchDrController@searchMain");
+Route::get("/ProduktDr/searchAction","SearchDrController@searchAction");
+Route::get("/ProduktDr/selectDrugs","SearchDrController@selectDrugs");

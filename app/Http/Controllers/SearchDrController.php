@@ -11,32 +11,36 @@ use App\Http\Services\calendar;
 use App\Http\Services\User as user;
 use Illuminate\Support\Facades\Input as Input;
 use App\Http\Services\drugs as drugs;
+use App\Http\Services\hashs as Hashs;
 use Auth;
 use App\Http\Services\search as Search;
 use Hash;
 use DB;
-class SearchController {   
+class SearchDrController {
     public function searchMain() {
-        if ( (Auth::check()) ) {
-            return View("search.Main");
+        $Hash = new Hashs();
+        if ( ($Hash->checkHashLogin() == true) ) {
+            return View("Dr.search.Main");
         }
         
     }
+    
     public function searchAction() {
-        if ( (Auth::check()) ) {
+        $Hash = new Hashs();
+        if ( ($Hash->checkHashLogin() == true) ) {
             $search = new Search;
             $drugs = new drugs;
-            $bool = $search->find(Auth::User()->id);
+            $bool = $search->find($Hash->id);
             //$search->findNot();
             $error = "";
             if ($search->bool == false) {
-                $list = $search->createQuestions($search->bool,Auth::User()->id);
+                $list = $search->createQuestions($search->bool);
                 if (count($list) == 0) {
                     $error = "Nic nie wyszukano";
                 }
                 $day = $search->changeArray($list);
                 $drugs->selectColor($list);
-                return View("search.searchAction")->with("listSearch",$list)->with("i",0)
+                return View("Dr.search.searchAction")->with("listSearch",$list)->with("i",0)
                         ->with("day",$day)->with("inDay",Input::get("day"))
                         ->with("colorDrugs",$drugs->colorDrugs)->with("error",$error);
             }
@@ -44,23 +48,23 @@ class SearchController {
                 return back()->with("error","Nic nie wyszukano")->withinput();
             }
             else if ( $search->bool == true ) {
-                $list = $search->createQuestions($search->bool,Auth::User()->id);
+                $list = $search->createQuestions($search->bool,$Hash->id);
                 if (count($list) == 0) {
                     $error = "Nic nie wyszukano";
                 }
                 $day = $search->changeArray($list);
                 $drugs->selectColor($list);
                 //var_dump($search->id_product);
-                return View("search.searchAction")->with("listSearch",$list)->with("i",0)
+                return View("Dr.search.searchAction")->with("listSearch",$list)->with("i",0)
                         ->with("day",$day)->with("inDay",Input::get("day"))
                         ->with("colorDrugs",$drugs->colorDrugs)->with("error",$error);
             }
         }
         
     }
-    
     public function selectDrugs() {
-        if ( (Auth::check()) ) {
+        $Hash = new Hashs();
+        if ( ($Hash->checkHashLogin() == true) ) {
             $search = new Search;
             $drugs = new drugs;
             
@@ -68,16 +72,13 @@ class SearchController {
                 return Redirect("/Produkt/Search")->with("errorSelect","Musisz uzupełnić daty");
             }
             
-            $list = $search->selectDrugs(Input::get("dateStart"),Input::get("dateEnd"));
+            $list = $search->selectDrugs(Input::get("dateStart"),Input::get("dateEnd"),$Hash->id);
             $drugs->selectColor($list);
-            return View("search.selectDrugs")->with("listSearch",$list)
+            return View("Dr.search.selectDrugs")->with("listSearch",$list)
                     ->with("i",0)
                     ->with("colorDrugs",$drugs->colorDrugs);
 ;
             //$Drugs->returnIdProduct()
         }
     }
-    
-    
-    
 }

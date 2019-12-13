@@ -18,19 +18,25 @@ use Auth;
 use Hash;
 use DB;
 use Cookie;
-class MainController 
-{
-    
+
+/**
+ * Description of MainDrController
+ *
+ * @author tomi
+ */
+class MainDrController {
+        
     public function Main($year = "",$month = "",$day = "",$action = "") {
         $user = new user();
-        //$Hash = new Hashs();
+        $Hash = new Hashs();
         //print $_COOKIE['hash'];
         //var_dump($_COOKIE);
      //$value = $request->cookie('hash');
       //echo $value;
         $product = new product;
         
-        if ( (Auth::check()) ) {
+        if ( ($Hash->checkHashLogin() == true) ) {
+            $user->updateHash();
             $kalendar = new calendar();
             $Drugs = new Drugs;
             $kalendar->set_date($month,$action,$day,$year);
@@ -40,21 +46,21 @@ class MainController
             $text_month = $kalendar->return_month_text($kalendar->month);
             $next_year  = $kalendar->return_next_year($kalendar->year);
             $back_year  = $kalendar->return_back_year($kalendar->year);
-            $listProduct = $Drugs->selectProduct(Auth::User()->id);
-            $Drugs->selectDrugsMonth($kalendar->year,$kalendar->month,Auth::User()->id);
-            $Drugs->selectDrugs(Auth::User()->id,$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day);
-            $Drugs->showSumDrugs(Auth::User()->id,$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day);
+            $listProduct = $Drugs->selectProduct($Hash->id);
+            $Drugs->selectDrugsMonth($kalendar->year,$kalendar->month,$Hash->id);
+            $Drugs->selectDrugs($Hash->id,$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day);
+            $Drugs->showSumDrugs($Hash->id,$kalendar->year . "-" . $kalendar->month . "-" . $kalendar->day);
             $sumAlkohol = $Drugs->sumPercentAlkohol();
             $separate = $Drugs->separateDrugs();
             $Drugs->processPrice($Drugs->list);
             $equivalent = $Drugs->sumEquivalent($Drugs->list);
             $allEquivalent = $Drugs->sumAllEquivalent($equivalent);
-            $benzo = $Drugs->selectBenzo(Auth::User()->id);
+            $benzo = $Drugs->selectBenzo($Hash->id);
             $Drugs->selectColor($Drugs->list);
             $i = count($Drugs->list);
             $ifDescription = $Drugs->checkIfDescription($Drugs->list);
 
-            return view("Main.main")
+            return view("Dr.Main.main")
                     ->with("month",$kalendar->month)
                     ->with("year",$kalendar->year)
                     ->with("day",$kalendar->day)
@@ -86,12 +92,9 @@ class MainController
         }
         else {
             
-            return Redirect('/User/Login')->with('error','Wylogowałeś się');
+            return Redirect('/User/Login')->with('errorDr','Nie masz dostępu');
         }
         
          
     }
-    
 }
-
-    

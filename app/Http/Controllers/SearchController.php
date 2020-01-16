@@ -40,7 +40,8 @@ class SearchController {
                         ->with("day",$day)->with("inDay",Input::get("day"))
                         ->with("colorDrugs",$drugs->colorDrugs)->with("error",$error);
             }
-            else if ($search->bool == true and $search->checkArrayFind() == false ) {
+            else if ($search->bool == true and $search->checkArrayFindPro(count($search->stringPro)) == false and
+                    $search->checkArrayFindSub(count($search->stringSub)) == false and $search->checkArrayFindGro(count($search->stringGro)) == false) {
                 return back()->with("error","Nic nie wyszukano")->withinput();
             }
             else if ( $search->bool == true ) {
@@ -68,7 +69,7 @@ class SearchController {
                 return Redirect("/Produkt/Search")->with("errorSelect","Musisz uzupełnić daty");
             }
             
-            $list = $search->selectDrugs(Input::get("dateStart"),Input::get("dateEnd"));
+            $list = $search->selectDrugs(Input::get("dateStart"),Input::get("dateEnd"),Auth::User()->id);
             $drugs->selectColor($list);
             return View("search.selectDrugs")->with("listSearch",$list)
                     ->with("i",0)

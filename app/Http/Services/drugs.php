@@ -561,10 +561,10 @@ class drugs
         $forwarding_substances = new Forwarding_substance;
         $listIdSub = array();
         $selectIdProduct = $Use->where("id",$id)->first();
-        $selectIdSub = $forwarding_substances->join("products","products.id","forwarding_substances.id_products")
-                ->where("id_products",$selectIdProduct->id_products)->get();
+        $selectIdSub1 = $forwarding_substances
+                ->where("forwarding_substances.id_products",$selectIdProduct->id_products)->get();
         $i = 0;
-        foreach ($selectIdSub as $selectIdSub2) {
+        foreach ($selectIdSub1 as $selectIdSub2) {
                $listIdSub[$i] = $selectIdSub2->id_substances;
                //print "d";
                if ($selectIdSub2->type_of_portion == 2) {
@@ -573,20 +573,25 @@ class drugs
                }
                $i++; 
         }
+        var_dump($listIdSub);
+        
          $selectIdSub3 = $forwarding_substances
                             ->orwherein("id_substances",$listIdSub)
                             ->groupBy("id_products")
                             ->havingRaw("count(*) = $i")
                             ->get();
          $array = array();
+         
          $i = 0;
          foreach ($selectIdSub3 as $selectIdSub4) {
              $array[$i] = $selectIdSub4->id_products;
              $i++;
          }
+         print ($i);
          if ($i == 0) {
              return array($selectIdProduct->id_products);
          }
+        
          return $array;
                 
     }

@@ -22,9 +22,9 @@ use Auth;
 
 class search
 {   
-    public $arrayFindPro = [0,0,0];
-    public $arrayFindSub = [0,0,0];
-    public $arrayFindGro = [0,0,0];
+    public $arrayFindPro = [array(),0,0];
+    public $arrayFindSub = [array(),0,0];
+    public $arrayFindGro = [array(),0,0];
     public $type;
     public $stringPro = [];
     public $stringSub = [];
@@ -130,16 +130,27 @@ class search
     public function find($id) {
         $array = array();
         //$bool = false;
-        
+        //print "s";
         if (Input::get("product") != "") {
             $this->divSearchString(Input::get("product"),"products");
             for ($i=0;$i < count($this->stringPro);$i++) {
                 $this->arrayFindPro[$i] = $this->findString($this->stringPro[$i],"products",$id);
+                //print "dd";
             }
             $this->type = "products";
-            if (count($this->arrayFindPro) != 0) {
-                for ($i=0;$i < count($this->stringPro);$i++) {
-                    $this->string2[$i] = $this->arrayFindPro[$i][0][1];
+            //print ("<pre>");
+            //print_r($this->arrayFindPro);
+            //print ("</pre>");
+            //print $this->arrayFindPro[1][0][1];
+            $z = 0;
+            for ($j=0;$j < count($this->stringPro);$j++) {
+                if (count($this->arrayFindPro[$j]) ) {
+                    for ($i=0;$i < count($this->stringPro);$i++) {
+                        if (isset($this->arrayFindPro[$i][0][1]) ) {
+                            $this->string2[$z] = $this->arrayFindPro[$i][0][1];
+                        }
+                        $z++;
+                    }
                 }
             }
             $this->selectIdProduct();
@@ -150,12 +161,19 @@ class search
             $this->divSearchString(Input::get("substances"),"substances");
                         for ($i=0;$i < count($this->stringSub);$i++) {
 
-                                $this->arrayFindSub[$i] = $this->findString($this->stringSub[$i],"substances");
+                                $this->arrayFindSub[$i] = $this->findString($this->stringSub[$i],"substances",$id);
                         }
             $this->type = "substances";
-            if (count($this->arrayFindSub) != 0) {
-                for ($i=0;$i < count($this->stringSub);$i++) {
-                    $this->string2[$i] = $this->arrayFindSub[$i][0][1];
+            $z = 0;
+            for ($j=0;$j < count($this->stringSub);$j++) {
+                if (count($this->arrayFindSub[$j]) != 0) {
+                    for ($i=0;$i < count($this->stringSub);$i++) {
+                        if (isset($this->arrayFindSub[$i][0][1]) ) {
+                            $this->string2[$z] = $this->arrayFindSub[$i][0][1];
+                        }
+                        
+                        $z++;
+                    }
                 }
             }
             $this->selectIdSubstances();
@@ -164,12 +182,18 @@ class search
         if (Input::get("group") != "") {
             $this->divSearchString(Input::get("group"),"group");
             for ($i=0;$i < count($this->stringGro);$i++) {
-                $this->arrayFindGro[$i] = $this->findString($this->stringGro[$i],"groups");
+                $this->arrayFindGro[$i] = $this->findString($this->stringGro[$i],"groups",$id);
             }
             $this->type = "groups";
-            if (count($this->arrayFindGro) != 0) {
-                for ($i=0;$i < count($this->stringGro);$i++) {
-                    $this->string2[$i] = $this->arrayFindGro[$i][0][1];
+            $z = 0;
+            for ($j=0;$j < count($this->stringGro);$j++) {
+                if (count($this->arrayFindGro[$j]) != 0) {
+                    for ($i=0;$i < count($this->stringGro);$i++) {
+                         if (isset($this->arrayFindGro[$i][0][1]) ) {
+                            $this->string2[$z] = $this->arrayFindGro[$i][0][1];
+                         }
+                         $z++;
+                    }
                 }
             }
             $this->selectIdGroups();
@@ -179,15 +203,61 @@ class search
         //return $bool;
     }
     
-    public function checkArrayFind() {
-        if ((count($this->arrayFindPro) == 0 or $this->arrayFindPro[0][0] <= 0.5) 
-                and (count($this->arrayFindSub) == 0 or $this->arrayFindSub[0][0] <= 0.5) 
-                and (count($this->arrayFindGro) == 0 or $this->arrayFindGro[0][0] <= 0.5)) {
+    public function checkArrayFindPro($count) {
+        $z = 0;
+        for ($i=0;$i < $count;$i++) {
+            if (!isset($this->arrayFindPro[$i]) and (count($this->arrayFindPro[$i]) == 0) or 
+                    (!isset($this->arrayFindPro[$i][0][0]) or $this->arrayFindPro[$i][0][0] <= 0.5) 
+                    ) {
+                //return false;
+                $z++;
+            }
+        
+            //return true;
+        }
+        if ($z == $i) {
             return false;
         }
-        return true;
+        else {
+            return true;
+        }
     }
-     
+    public function checkArrayFindSub($count) {
+        $z = 0;
+        for ($i=0;$i < $count;$i++) {
+            if (!isset($this->arrayFindSub[$i]) and (count($this->arrayFindSub[$i]) == 0) or 
+                    (!isset($this->arrayFindSub[$i][0][0]) or $this->arrayFindSub[$i][0][0] <= 0.5) 
+                    ) {
+                $z++;
+            }
+        
+            //return true;
+        }
+        if ($z == $i) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+    public function checkArrayFindGro($count) {
+        $z = 0;
+        for ($i=0;$i < $count;$i++) {
+            if (!isset($this->arrayFindGro[$i]) and (count($this->arrayFindGro[$i]) == 0) or 
+                    (!isset($this->arrayFindGro[$i][0][0]) or $this->arrayFindGro[$i][0][0] <= 0.5) 
+                    ) {
+                $z++;
+            }
+        
+            //return true;
+        }
+        if ($z == $i) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
      
     public function selectIdProduct() {
         $product = new product;
@@ -372,7 +442,6 @@ class search
                 ->selectRaw("usees.portion as portion")
                 ->selectRaw("usees.date as date")
                 ->selectRaw("usees.id_products as id")
-                
                 ->selectRaw("usees.id as id_usees")
                 ->selectRaw("descriptions.description as description")
                 ->selectRaw("descriptions.date as date_description")
@@ -448,7 +517,7 @@ class search
              $find3 = DB::table($table)->get();
 
                 $result = $this->findSuchString($search,$find2->name);
-                if ($result >= 0) {
+                if ($result >= 0.5) {
                    $array[$i][0] =  $result;
                    $array[$i][1] =  $find2->name;
                  

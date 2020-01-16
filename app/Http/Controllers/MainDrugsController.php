@@ -75,7 +75,7 @@ class MainDrugsController
            if ( (Auth::check()) ) {
                $drugs->selectRegistration2(Input::get("id"));
                $equivalent = $drugs->sumEquivalent($drugs->list);
-               $benzo = $drugs->selectBenzo();
+               $benzo = $drugs->selectBenzo(Auth::User()->id);
                $drugs->processPrice($drugs->list);
                return View("ajax.ShowUpdatesDrugs")->with("listDrugs",$drugs->list)
                        ->with("equivalent",$equivalent)->with("benzo",$benzo)->with("i",Input::get("i"));

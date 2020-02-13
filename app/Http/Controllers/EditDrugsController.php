@@ -37,6 +37,9 @@ class EditDrugsController
                     ->with("listProduct",$listProduct)
                     ->with("hash",$selectHash);
         }
+        else {
+            return Redirect('/User/Login')->with('error','Musiałeś się wylogować');
+        }
         
     }
     public function EditGroup() {
@@ -65,6 +68,7 @@ class EditDrugsController
             return View("ajax.EditProduct")->with("list",$substance)
                     ->with("id",Input::get("id"))->with("name",$name);
         }
+        
         
     }
     public function changeSubstance() {

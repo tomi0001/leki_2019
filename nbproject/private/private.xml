@@ -8,18 +8,24 @@
             <file>file:/var/www/html/leki_2019/app/Http/Services/drugs.php</file>
             <file>file:/var/www/html/leki_2019/app/Http/Controllers/HashController.php</file>
             <file>file:/var/www/html/leki_2019/app/Http/Services/search.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/SearchDrController.php</file>
+            <file>file:/var/www/html/leki_2019/public/js/app.js</file>
             <file>file:/var/www/html/leki_2019/resources/views/User/Login.blade.php</file>
             <file>file:/var/www/html/leki_2019/app/Http/Controllers/UserController.php</file>
             <file>file:/var/www/html/leki_2019/resources/views/search/mainSearch.blade.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/MainDrController.php</file>
             <file>file:/var/www/html/leki_2019/.env</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/AddDrugsController.php</file>
             <file>file:/var/www/html/leki_2019/routes/web.php</file>
             <file>file:/var/www/html/leki_2019/resources/views/Drugs/EditDrugs.blade.php</file>
             <file>file:/var/www/html/leki_2019/app/Http/Controllers/SearchController.php</file>
             <file>file:/var/www/html/leki_2019/config/auth.php</file>
             <file>file:/var/www/html/leki_2019/app/Http/Services/calendar.php</file>
             <file>file:/var/www/html/leki_2019/app/Http/Services/User.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/UserDrController.php</file>
             <file>file:/var/www/html/leki_2019/app/Http/Controllers/CookieController.php</file>
             <file>file:/var/www/html/leki_2019/app/Http/Services/hashs.php</file>
+            <file>file:/var/www/html/leki_2019/app/Http/Controllers/EditDrugsController.php</file>
             <file>file:/var/www/html/leki_2019/app/Http/Controllers/MainDrugsController.php</file>
         </group>
     </open-files>

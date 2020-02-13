@@ -31,6 +31,7 @@ use Cookie;
 class hashs {
     public $hash = '';
     public $id = '';
+    public $start = '';
     public function checkHash($id) {
         $Hash = new Hash;
         $select = $Hash->where("id_users",$id)->count();

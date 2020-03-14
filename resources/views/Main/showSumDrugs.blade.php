@@ -32,14 +32,14 @@
 @endif
 @if ($allEquivalent != 0)
     <tr>
-        <td class='center_danger'>
+        <td class='center_danger' id='equivalentAllname'>
            Równoważnik dzienny diazepamu
         </td>
-        <td class='center_danger'>
+        <td class='center_danger' id='equivalentAll'>
             {{$allEquivalent}}
         </td>    
         <td class='center_danger'>
-            
+            Mg
         </td>
     </tr>
             <tr>

@@ -35,6 +35,7 @@ class drugs
     public $listSum = array();
     public $description = array();
     public $ifAlcohol = false;
+    public $countProduct = 0;
     public function addGroup() :bool {
         if ($this->checkGroupName(Input::get("name"),Auth::User()->id) == "" ) {
             $Group = new Group;
@@ -448,6 +449,7 @@ class drugs
        $Use = new usee;
        $start = $startDay;
        $listen = usee::query();
+       
        $id_users = $id;
        //if ($ifAlcohol == true) {
               
@@ -455,11 +457,13 @@ class drugs
         //}
         $listen->selectRaw("DATE(IF(HOUR(usees.date) >= '$start', DATE,Date_add(usees.date, INTERVAL - 1 DAY))) as DAT" );
         $listen->selectRaw("products.type_of_portion as type" );
-                if ($ifAlcohol == true) {
+                if ($this->ifAlcohol == true) {
+                    
               
                     $listen->selectRaw("round(SUM((usees.portion * products.how_percent / 100)),2) AS portion");
                 }
                 else {
+                    
                    $listen->selectRaw("SUM(usees.portion) AS portion");
                 }
                    $listen->selectRaw("usees.date as date")
@@ -473,11 +477,12 @@ class drugs
         }
                    $listen->where("usees.id_users",$id_users)
                    ->groupBy("DAT")
+                   //->havingRaw("")
                    ->orderBy("DAT","DESC");
                 
                 $list = $listen->get();
         
-
+       //print count($list);
        $array = array();
        $data1 = array();
        $time = array();
@@ -561,7 +566,9 @@ class drugs
         $forwarding_substances = new Forwarding_substance;
         $listIdSub = array();
         $selectIdProduct = $Use->where("id",$id)->first();
-        $selectIdSub1 = $forwarding_substances
+        $selectIdSub1 = $forwarding_substances->selectRaw("forwarding_substances.id_substances as id_substances")
+                ->selectRaw("products.type_of_portion as type_of_portion")
+                ->join("products","products.id","forwarding_substances.id_products")
                 ->where("forwarding_substances.id_products",$selectIdProduct->id_products)->get();
         $i = 0;
         foreach ($selectIdSub1 as $selectIdSub2) {
@@ -573,21 +580,25 @@ class drugs
                }
                $i++; 
         }
-        var_dump($listIdSub);
-        
+        //var_dump($listIdSub);
+        //print ($i);
+        $this->countProduct = $i;
          $selectIdSub3 = $forwarding_substances
-                            ->orwherein("id_substances",$listIdSub)
+                            ->wherein("id_substances",$listIdSub)
+                            //->where
                             ->groupBy("id_products")
-                            ->havingRaw("count(*) = $i")
+                            ->havingRaw("count(id_products) = $i")
+                            //->limit($i)
                             ->get();
          $array = array();
          
          $i = 0;
+         //var_dump($selectIdSub3);
          foreach ($selectIdSub3 as $selectIdSub4) {
              $array[$i] = $selectIdSub4->id_products;
              $i++;
          }
-         print ($i);
+         //var_dump($array);
          if ($i == 0) {
              return array($selectIdProduct->id_products);
          }
@@ -863,6 +874,12 @@ class drugs
         $list = $substances->where("id_users",$id)
                            ->where("equivalent","!=",0)
                            ->where("equivalent","!=",null)->get();
+        return $list;
+        
+    }
+    public function selectBenzoName($id) {
+        $substances = new Substances;
+        $list = $substances->find($id);
         return $list;
         
     }

@@ -1,1 +1,5 @@
-<div class="ajax_benzo">{{$result}}</div>
+
+<script>
+    window.onload=equivalent_benzo({{$result}},{{$i}},'{{$name->name}}');
+    
+    </script>

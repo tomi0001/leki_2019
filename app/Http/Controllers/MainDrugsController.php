@@ -225,9 +225,15 @@ class MainDrugsController
      public function sumBenzo() {
          $Drugs = new Drugs;
          $equivalent = $Drugs->selectEquivalent(Input::get("id"));
-
+         $name = $Drugs->selectBenzoName(Input::get("id"));
+         //$substances->find($id);
          $result = $Drugs->calculateEquivalent(Input::get("equivalent"),10,$equivalent);
-
-         return View("ajax.equivalent_benzo")->with("result",$result);
+         //print ("<body onload=\"alert('Przykładowy tekst');\">");
+         if (Input::get("i") == "all") {
+             return View("ajax.equivalent_benzo2")->with("result",$result)->with("i",Input::get("i"))->with("name",$name);
+         }
+         else {
+             return View("ajax.equivalent_benzo")->with("result",$result)->with("i",Input::get("i"))->with("name",$name);
+         }
      }
 }

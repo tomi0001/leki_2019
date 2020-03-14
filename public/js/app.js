@@ -29,6 +29,18 @@
         $("#hash").val(string);
         
     }
+    
+    function equivalent_benzo(value,i,name) {
+        //alert('ss');
+        $("#equivalent_tr_" + i).text("Równoażnik " + name);
+        $("#equivalent_" + i).text(value + " mg");
+    }
+    //function equivalent_benzo2(value,i,name) {
+        //alert('ss');
+        //$("#equivalentAllname").text("Równoażnik dzienny " + name);
+        //$("#equivalentAll").text(value + " mg");
+        //alert("ss");
+    //}
     function addSubstances(url) {
         //var name = $("#name").val();
         //var group = $("#group").val();
@@ -278,7 +290,7 @@
         //var data = $('form#changebenzo'+i).serialize();
         var name = $("select[name=benzo" + i +  "]").val();
         //alert(name);
-        $("#sumbenzo"+i).load(url + "?id=" + name  + "&equivalent=" + equivalent);
+        $("#sumbenzo"+i).load(url + "?id=" + name  + "&equivalent=" + equivalent + "&i=" + i);
         
     }
     function add_description_submit(i,url,id_use) {

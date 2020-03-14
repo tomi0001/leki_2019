@@ -78,11 +78,11 @@
             @endif
             @if ($equivalent[$i] != 0)
              <tr>
-                <td class="center_danger">
+                <td class="center_danger" id='equivalent_tr_{{$i}}'>
                     Równoważnik diazepamu
                 </td>
                 <td class="center_danger">
-                    {{$equivalent[$i]}}
+                    <div id="equivalent_{{$i}}">{{$equivalent[$i]}}
                     @switch ($list->type)
                         @case ($list->type == 1)
                         Mg
@@ -95,7 +95,7 @@
                     
                     
                     @endswitch
-
+                    </div>
                 </td>
             </tr>
             <tr>

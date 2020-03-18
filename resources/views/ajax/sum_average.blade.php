@@ -1,4 +1,4 @@
-
+Ilość dni {{$sumDay}}
     @for ($i=0;$i < count($hourDrugs);$i++)
     <div class="ajax_succes" >
     {{$hourDrugs[$i][2]}} - {{$hourDrugs[$i][1]}}<br>

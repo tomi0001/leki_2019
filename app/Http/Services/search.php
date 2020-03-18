@@ -427,6 +427,38 @@ class search
          */
     }
     
+    
+    
+    public function sumAverage() {
+         $Drugs = new Drugs;
+         $Hash = new Hashs();
+         $user = new user();
+         if ( (Auth::check()) ) {
+             $id = Auth::User()->id;
+             $startDay = Auth::User()->start_day;
+         }
+         else if ($Hash->checkHashLogin() == true) {
+             $user->updateHash();
+             $id = $Hash->id;
+             $startDay = $Hash->start;
+         }
+         else {
+             return;
+         }
+            $bool = $Drugs->checkDrugs($id,Input::get("id"));
+            if ($bool == true) {
+                $list = $Drugs->returnIdProduct(Input::get("id"));
+                $date = $Drugs->returnDateDrugs(Input::get("id"));
+                $hourDrugs = $Drugs->sumAverageCount($list,$date,$Drugs->ifAlcohol,$id,$startDay);
+                $array = array();
+                for ($i=0;$i < count($hourDrugs);$i++) {
+                   $array[$i] = $Drugs->sumDifferentDay($hourDrugs[$i][1],$hourDrugs[$i][2]);
+
+                }
+                return View("ajax.sum_average")->with("arrayDay",$array)->with("hourDrugs",$hourDrugs);
+            }
+         
+     }
     public function createQuestions($bool,$id) {
         $drugs = new drugs;
         $this->question =  usee::query();

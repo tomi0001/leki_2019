@@ -71,6 +71,8 @@ class SearchController {
             
             $list = $search->selectDrugs(Input::get("dateStart"),Input::get("dateEnd"),Auth::User()->id);
             $drugs->selectColor($list);
+            $drugs->selectColor($list);
+            //$daySum = $this->sumAverage();
             return View("search.selectDrugs")->with("listSearch",$list)
                     ->with("i",0)
                     ->with("colorDrugs",$drugs->colorDrugs);
@@ -78,6 +80,10 @@ class SearchController {
             //$Drugs->returnIdProduct()
         }
     }
+    
+    
+
+    
     
     
     

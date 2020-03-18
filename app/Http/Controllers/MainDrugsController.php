@@ -163,7 +163,7 @@ class MainDrugsController
                    $array[$i] = $Drugs->sumDifferentDay($hourDrugs[$i][1],$hourDrugs[$i][2]);
 
                 }
-                return View("ajax.sum_average")->with("arrayDay",$array)->with("hourDrugs",$hourDrugs);
+                return View("ajax.sum_average")->with("arrayDay",$array)->with("hourDrugs",$hourDrugs)->with("sumDay",$Drugs->sumDayAverage);
             }
          
      }
@@ -195,7 +195,7 @@ class MainDrugsController
                 $array[$i] = $Drugs->sumDifferentDay($hourDrugs[$i][1],$hourDrugs[$i][2]);
                  
              }
-             return View("ajax.sum_average")->with("arrayDay",$array)->with("hourDrugs",$hourDrugs);
+             return View("ajax.sum_average")->with("arrayDay",$array)->with("hourDrugs",$hourDrugs)->with("sumDay",$Drugs->sumDayAverage);
               
               
          }

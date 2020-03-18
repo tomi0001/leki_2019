@@ -10,7 +10,7 @@
         
         <script src="{{ asset('./js/app.js')}}"></script>
 
-        <link href="{{ asset('./css/blue_green/app.css') }}" rel="stylesheet"> 
+        <link href="{{ asset('./css/default/app.css') }}" rel="stylesheet"> 
     </head>
     <body>
 

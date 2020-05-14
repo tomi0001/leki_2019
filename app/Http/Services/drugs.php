@@ -540,14 +540,17 @@ class drugs
        $Use = new usee;
        $start = $startDay;
        $listen = usee::query();
-       
+
        $id_users = $id;
        //if ($ifAlcohol == true) {
               
                     $listen->join("products","products.id","usees.id_products");
         //}
+
+
         $listen->selectRaw("DATE(IF(HOUR(usees.date) >= '$start', DATE,Date_add(usees.date, INTERVAL - 1 DAY))) as DAT" );
         $listen->selectRaw("products.type_of_portion as type" );
+
                 if ($this->ifAlcohol == true) {
                     
               
@@ -556,31 +559,41 @@ class drugs
                 else {
                     
                    $listen->selectRaw("SUM(usees.portion) AS portion");
+                    $listen->selectRaw("count(usees.portion) AS count");
                 }
                    $listen->selectRaw("usees.date as date")
                    ->wherein("usees.id_products",$arrayId);
+
+
         if ($date2 == "") {
                    $listen->where("usees.date","<=",$date);
+
         }
         else {
             $listen->where("usees.date",">=",$date)
                     ->where("usees.date","<=",$date2);
+
         }
                    $listen->where("usees.id_users",$id_users)
                    ->groupBy("DAT")
                    //->havingRaw("")
                    ->orderBy("DAT","DESC");
+
+
                 
                 $list = $listen->get();
+
         
        //print count($list);
        $array = array();
        $data1 = array();
        $time = array();
        $dose = array();
+       $count = array();
         $j = 0;
         $z = 0;
         $i = 0;
+        $x = 0;
         $type = "";
         foreach ($list as $rekord2) {
             switch ($rekord2->type) {
@@ -592,8 +605,10 @@ class drugs
                     break;
             
             }
+
             $data1[$i] = explode(" ",$rekord2->date);
             $dose[$i] = $rekord2->portion;
+            $count[$i] = $rekord2->count;
             $data = explode("-",$data1[$i][0]);
             $data2 = explode(":",$data1[$i][1]);
             $time[$i] = mktime($data2[0],$data2[1],$data2[2],$data[1],$data[2],$data[0]);
@@ -602,6 +617,7 @@ class drugs
                 $array[$j][1] = $data1[$i][0];
                 $array[$j][2] = $data1[$i][0];
                 $array[$j][3] = 0;
+                $array[$j][4] = $count[$i];
               
               
             }
@@ -613,7 +629,8 @@ class drugs
                 $array[$j][1] = $data1[$i][0];
                 $array[$j][2] = $data1[$i][0];
                 $array[$j][3] = 0;
-             
+                $array[$j][4] = $count[$i];
+                $x--;
                 //break;
             }
             elseif ($i != 0 and $dose[$i] != $dose[$i-1]) {
@@ -623,10 +640,21 @@ class drugs
                 $array[$j][1] = $data1[$i][0];
                 $array[$j][2] = $data1[$i][0];
                 $array[$j][3] = 0;
+                $array[$j][4] = $count[$i];
                 
-              
+             
                 
                 
+            }
+            else if ($i != 0 and $count[$i] != $count[$i-1]) {
+                $array[$j][2] = $data1[$i-1][0];
+                $j++;
+                $array[$j][0] = $dose[$i] . $type;
+                $array[$j][1] = $data1[$i][0];
+                $array[$j][2] = $data1[$i][0];
+                $array[$j][3] = 0;
+                $array[$j][4] = $count[$i];
+                 
             }
             elseif ($i == count($list)-1) {
                 $array[$j][0] = $dose[$i] . $type;
@@ -639,8 +667,9 @@ class drugs
             
         
             $i++;
+            $x++;
         }
-           $this->sumDayAverage = $i;
+           $this->sumDayAverage = $x;
        return $array;
        
     }

@@ -105,6 +105,7 @@
                 ->appends(['search'=>Input::get("search")])
                 ->appends(['dose1'=>Input::get("dose1")])
                 ->appends(['dose2'=>Input::get("dose2")])
+                ->appends(['inDay'=>Input::get("inDay")])
                 ->appends(['day'=>Input::get("day")])
                 ->appends(['data1'=>Input::get("data1")])
                 ->appends(['data2'=>Input::get("data2")])

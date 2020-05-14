@@ -23,7 +23,7 @@ class MainController
     
     public function Main($year = "",$month = "",$day = "",$action = "") {
         $user = new user();
-        //$Hash = new Hashs();
+        //$Hash = new Hashs();s
         //print $_COOKIE['hash'];
         //var_dump($_COOKIE);
      //$value = $request->cookie('hash');
@@ -86,7 +86,7 @@ class MainController
         }
         else {
             
-            return Redirect('/User/Login')->with('error','Wylogowałeś się');
+            return Redirect('/User/Login');
         }
         
          

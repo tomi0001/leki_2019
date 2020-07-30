@@ -605,8 +605,8 @@ class drugs
                     break;
             
             }
-
-            $data1[$i] = explode(" ",$rekord2->date);
+            //print $rekord2->DAT . "<br>";
+            $data1[$i] = explode(" ",$rekord2->date . " $start:00:00");
             $dose[$i] = $rekord2->portion;
             $count[$i] = $rekord2->count;
             $data = explode("-",$data1[$i][0]);
@@ -630,7 +630,7 @@ class drugs
                 $array[$j][2] = $data1[$i][0];
                 $array[$j][3] = 0;
                 $array[$j][4] = $count[$i];
-                $x--;
+                //$x--;
                 //break;
             }
             elseif ($i != 0 and $dose[$i] != $dose[$i-1]) {
